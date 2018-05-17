@@ -1,6 +1,10 @@
 'use strict'
 
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
+
+import { ProcessMonitor } from './process'
+
+const log = require('electron-log')
 
 /**
  * Set `__static` path to static files in production
@@ -30,12 +34,17 @@ function createWindow () {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
+
+  mainWindow.webContents.once('did-finish-load', () => {
+    startupProcesses()
+  })
 }
 
 app.on('ready', createWindow)
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
+    stopProcesses()
     app.quit()
   }
 })
@@ -45,6 +54,38 @@ app.on('activate', () => {
     createWindow()
   }
 })
+
+class IpcWrapper {
+  constructor (ipcIn, ipcOut) {
+    this.ipcIn = ipcIn
+    this.ipcOut = ipcOut
+  }
+
+  on (event, cb) {
+    this.ipcIn.on(event, cb)
+  }
+
+  send (event, msg) {
+    this.ipcOut.send(event, msg)
+  }
+}
+
+const ccgPath = 'C:\\caspar\\2.1.0_NRK_RC1\\CasparCG Server\\server\\' // TODO - config file this
+let casparHost, mediaScanner
+
+function startupProcesses () {
+  log.info('Starting child processes')
+
+  const wrapper = new IpcWrapper(ipcMain, mainWindow.webContents)
+
+  casparHost = new ProcessMonitor('ccg', wrapper, ccgPath, 'casparcg.exe')
+  mediaScanner = new ProcessMonitor('scanner', wrapper, ccgPath, 'scanner.exe')
+}
+
+function stopProcesses () {
+  casparHost.stop()
+  mediaScanner.stop()
+}
 
 /**
  * Auto Updater

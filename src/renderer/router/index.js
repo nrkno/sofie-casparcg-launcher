@@ -16,3 +16,13 @@ export default new Router({
     }
   ]
 })
+
+const {ipcRenderer} = require('electron')
+window.blah = ipcRenderer
+ipcRenderer.on('ccg.log', function (store, data) {
+  console.log(store, data.toString())
+})
+
+ipcRenderer.on('scanner.log', function (store, data) {
+  console.log(store, data.toString())
+})
