@@ -1,5 +1,5 @@
 {
-  "name": "casparcg-wrapper",
+  "name": "casparcg-launcher",
   "version": "0.0.0",
   "author": "Julian Waller <julian@superfly.tv>",
   "description": "Restart and log ui for CasparCG",
@@ -22,7 +22,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "casparcg-wrapper",
+    "productName": "casparcg-launcher",
     "appId": "org.simulatedgreg.electron-vue",
     "directories": {
       "output": "build"

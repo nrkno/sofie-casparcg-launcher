@@ -1,4 +1,4 @@
-# casparcg-wrapper
+# casparcg-launcher
 
 > Restart and log ui for CasparCG
 
