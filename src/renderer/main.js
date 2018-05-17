@@ -20,3 +20,11 @@ new Vue({
   store,
   template: '<App/>'
 }).$mount('#app')
+
+const {ipcRenderer} = require('electron')
+const ids = ['casparcg', 'media-scanner']
+ids.forEach(id => {
+  ipcRenderer.on(id + '.log', (e, data) => {
+    store.dispatch('logLine', { id: id, data: JSON.parse(data) })
+  })
+})

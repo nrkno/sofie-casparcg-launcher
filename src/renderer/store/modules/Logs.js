@@ -3,11 +3,15 @@ const state = {
   'media-scanner': []
 }
 
+const maxRows = 500
+
 const mutations = {
   LOG_LINE (state, {id, data}) {
     state[id].push(data)
 
-    // TODO - purge old lines if over the limit
+    if (state[id].length > maxRows) {
+      state[id].splice(0, state[id].length - maxRows)
+    }
   },
 
   LOG_CLEAR (state, {id}) {
