@@ -19,12 +19,14 @@ export class ProcessMonitor {
       this.logToStream('event', '== Process has started ==')
     })
     this.process.on('stdout', (data) => {
-      this.logToStream('log', data.toString())
+      const lines = data.toString().split('\n')
+      lines.forEach(l => this.logToStream('log', l))
     })
     this.process.on('stderr', (data) => {
       log.info(exeName + ' stderr')
 
-      this.logToStream('error', data.toString())
+      const lines = data.toString().split('\r\n')
+      lines.forEach(l => this.logToStream('error', l))
     })
     this.process.on('stop', () => {
       log.info(exeName + ' stop')
