@@ -2,10 +2,9 @@
 
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import Conf from 'conf'
+import log from 'electron-log'
 
 import { ProcessMonitor } from './process'
-
-const log = require('electron-log')
 
 /**
  * Set `__static` path to static files in production

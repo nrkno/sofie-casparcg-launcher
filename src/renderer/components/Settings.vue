@@ -9,8 +9,27 @@
             <b-form-input id="basePathInput"
                           type="text"
                           v-model="config.basePath"
-                          required
                           placeholder="./">
+            </b-form-input>
+          </b-form-group>
+          
+          <b-form-group id="casparcgArgsInputGroup"
+                        label="CasparCG Arguments:"
+                        label-for="casparcgArgsInput">
+            <b-form-input id="casparcgArgsInput"
+                          type="text"
+                          v-model="config.args.casparcg"
+                          placeholder="">
+            </b-form-input>
+          </b-form-group>
+          
+          <b-form-group id="scannerArgsInputGroup"
+                        label="Media Scanner Arguments:"
+                        label-for="scannerArgsInput">
+            <b-form-input id="scannerArgsInput"
+                          type="text"
+                          v-model="config.args['media-scanner']"
+                          placeholder="">
             </b-form-input>
           </b-form-group>
 
@@ -29,14 +48,19 @@
   export default {
     created () {
       ipcRenderer.on('config', (s, conf) => {
-        console.log(conf)
         this.config = conf
+
+        if (!this.config.args) {
+          this.config.args = {}
+        }
       })
       ipcRenderer.send('config.get')
     },
     data () {
       return {
-        config: {}
+        config: {
+          args: {}
+        }
       }
     },
 

@@ -1,7 +1,8 @@
-const log = require('electron-log')
-const respawn = require('respawn')
-const path = require('path')
-const fs = require('fs')
+import log from 'electron-log'
+import respawn from 'respawn'
+import path from 'path'
+import fs from 'fs'
+import stringArgv from 'string-argv'
 
 export class ProcessMonitor {
   constructor (id, ipcWrapper, config, exeName) {
@@ -21,14 +22,17 @@ export class ProcessMonitor {
       }
     })
 
-    config.onDidChange('basePath', () => {
-      if (this.process) {
-        this.process.stop(() => this.init())
-      } else {
-        this.init()
-      }
-    })
+    config.onDidChange('basePath', () => this.reinit())
+    config.onDidChange('args.' + id, () => this.reinit())
     this.init()
+  }
+
+  reinit () {
+    if (this.process) {
+      this.process.stop(() => this.init())
+    } else {
+      this.init()
+    }
   }
 
   init () {
@@ -50,8 +54,10 @@ export class ProcessMonitor {
       return
     }
 
+    const args = this.config.get('args.' + this.id, '')
+    log.info(args)
     this.process = respawn(
-      [this.exeName], {
+      [this.exeName].concat(stringArgv(args)), {
         cwd: basePath
       }
     )
