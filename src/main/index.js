@@ -1,7 +1,6 @@
 'use strict'
 
-import { app, BrowserWindow, ipcMain } from 'electron'
-import path from 'path'
+import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 
 import { ProcessMonitor } from './process'
 
@@ -31,6 +30,20 @@ function createWindow () {
   })
 
   mainWindow.loadURL(winURL)
+
+  mainWindow.on('close', e => {
+    const choice = dialog.showMessageBox(mainWindow,
+      {
+        type: 'question',
+        buttons: ['Yes', 'No'],
+        title: 'Confirm',
+        message: 'Are you sure you want to quit?'
+      })
+
+    if (choice === 1) {
+      e.preventDefault()
+    }
+  })
 
   mainWindow.on('closed', () => {
     mainWindow = null

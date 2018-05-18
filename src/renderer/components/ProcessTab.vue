@@ -10,8 +10,8 @@
           </b-button-group>
         </div>
 
-        <ul id="log-panel">
-          <li v-for="l in lines" v-bind:class="l.type">
+        <ul id="log-panel" v-chat-scroll="{always: false}">
+          <li v-for="l in lines" v-bind:class="[l.type, logClass(l)]">
             {{ l.content }}
           </li>
         </ul>
@@ -52,6 +52,20 @@
       },
       start () {
         ipcRenderer.send(this.$route.params.id + '.control', 'start')
+      },
+
+      logClass (l) {
+        if (l.content.indexOf('[error]') !== -1) {
+          return 'error'
+        }
+        if (l.content.indexOf('[warning]') !== -1) {
+          return 'warning'
+        }
+        if (l.content.indexOf('[info]') !== -1) {
+          return 'info'
+        }
+
+        return null
       }
     }
   }
@@ -71,6 +85,9 @@
 
     overflow-y: scroll;
     height: calc(100vh - 56px - 38px - 50px);
+
+    font-family: courier;
+    font-size: 0.95em;
   }
 
   #log-panel li {
@@ -79,5 +96,12 @@
 
   #log-panel li.event {
     color: blue;
+  }
+  
+  #log-panel li.log.error {
+    color: red;
+  }
+  #log-panel li.log.warning {
+    color: orange;
   }
 </style>
