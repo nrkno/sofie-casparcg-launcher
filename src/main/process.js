@@ -69,7 +69,7 @@ export class ProcessMonitor {
   }
 
   start () {
-    this.process.start() // TODO - ensure not already
+    this.process.start()
   }
 
   stop (cb) {

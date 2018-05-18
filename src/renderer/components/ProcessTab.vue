@@ -85,10 +85,7 @@
   
   #log-panel {
     list-style-type: none;
-    overflow: auto;
-
-    /* display: flex;
-    flex-direction: column-reverse; */
+    overflow: scroll;
 
     overflow-y: scroll;
     height: calc(100vh - 56px - 38px - 50px);

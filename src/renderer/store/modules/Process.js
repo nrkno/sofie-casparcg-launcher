@@ -1,17 +1,14 @@
-const state = {
-  casparcg: {
-    log: [],
-    status: 'unknown'
-  },
-  'media-scanner': {
-    log: [],
-    status: 'unknown'
-  }
-}
+const state = {}
 
 const maxRows = 500
 
 const mutations = {
+  INIT (state, {id}) {
+    state[id] = {
+      log: [],
+      status: 'unknown'
+    }
+  },
   LOG_LINE (state, {id, data}) {
     state[id].log.push(data)
 
@@ -30,6 +27,9 @@ const mutations = {
 }
 
 const actions = {
+  init ({ commit }, {id}) {
+    commit('INIT', {id})
+  },
   logLine ({ commit }, {id, data}) {
     // do something async
     commit('LOG_LINE', {id, data})
