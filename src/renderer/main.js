@@ -29,4 +29,7 @@ ids.forEach(id => {
   ipcRenderer.on(id + '.log', (e, data) => {
     store.dispatch('logLine', { id: id, data: JSON.parse(data) })
   })
+  ipcRenderer.on(id + '.status', (e, status) => {
+    store.dispatch('setStatus', { id, status })
+  })
 })

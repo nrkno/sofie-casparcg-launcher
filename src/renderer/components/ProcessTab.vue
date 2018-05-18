@@ -2,7 +2,10 @@
   <b-container fluid>
     <b-row>
       <b-col>
-        <div>
+        <div id="status-bar">
+          <span>
+            {{ data.status }}
+          </span>
           <b-button-group>
             <b-button variant="warning" v-on:click="clearLog">Clear Log</b-button>
             <b-button variant="success" v-on:click="start">Start</b-button>
@@ -11,7 +14,7 @@
         </div>
 
         <ul id="log-panel" v-chat-scroll="{always: false}">
-          <li v-for="l in lines" v-bind:class="[l.type, logClass(l)]">
+          <li v-for="(l, i) in data.log" v-bind:key="i" v-bind:class="[l.type, logClass(l)]">
             {{ l.content }}
           </li>
         </ul>
@@ -24,22 +27,15 @@
   const {ipcRenderer} = require('electron')
 
   export default {
-    // created () {
-    //   const id = this.$route.params.id
-    //   ipcRenderer.on(id + '.log', (e, data) => {
-    //     this.$store.dispatch('logLine', { id: id, data: JSON.parse(data) })
-    //   })
-    // },
-
     data () {
       return {
-        lines: this.$store.state.Logs[this.$route.params.id]
+        data: this.$store.state.Process[this.$route.params.id]
       }
     },
 
     watch: {
       '$route' (to, from) {
-        this.lines = this.$store.state.Logs[to.params.id]
+        this.data = this.$store.state.Process[to.params.id]
       }
     },
 
@@ -72,6 +68,10 @@
 </script>
 
 <style scoped>
+  #status-bar {
+    text-align: right;
+  }
+
   .btn-group {
     margin: 15px;
   }

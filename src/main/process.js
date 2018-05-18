@@ -16,40 +16,42 @@ export class ProcessMonitor {
     )
 
     this.process.on('start', () => {
-      this.logToStream('event', '== Process has started ==')
+      this.pipeLog('event', '== Process has started ==')
+      this.pipeStatus('running')
     })
     this.process.on('stdout', (data) => {
-      const lines = data.toString().split('\n')
-      lines.forEach(l => this.logToStream('log', l))
+      const lines = data.toString().trim().split('\n')
+      lines.forEach(l => this.pipeLog('log', l))
     })
     this.process.on('stderr', (data) => {
       log.info(exeName + ' stderr')
 
-      const lines = data.toString().split('\r\n')
-      lines.forEach(l => this.logToStream('error', l))
+      const lines = data.toString().trim().split('\r\n')
+      lines.forEach(l => this.pipeLog('error', l))
     })
     this.process.on('stop', () => {
       log.info(exeName + ' stop')
 
-      this.logToStream('event', '== Process has stopped ==')
+      this.pipeLog('event', '== Process has stopped ==')
+      this.pipeStatus('stopped')
     })
     this.process.on('crash', () => {
       log.info(exeName + ' crash')
-      this.logToStream('event', '== Process has crashed ==')
+      this.pipeLog('event', '== Process has crashed ==')
     })
     this.process.on('sleep', () => {
       log.info(exeName + ' sleep')
-      this.logToStream('event', '== Process is sleeping ==')
+      this.pipeLog('event', '== Process is sleeping ==')
     })
     this.process.on('spawn', (process) => {
       log.info(exeName + ' spawn ' + process.pid)
 
-      this.logToStream('event', '== Process is starting ==')
+      this.pipeLog('event', '== Process is starting ==')
     })
     this.process.on('exit', (code, signal) => {
       log.info(exeName + ' exit ' + code + ' ' + signal)
 
-      this.logToStream('event', '== Process has exited with code ' + code + ' ==')
+      this.pipeLog('event', '== Process has exited with code ' + code + ' ==')
     })
 
     this.ipcWrapper.on(id + '.control', (a, b) => {
@@ -77,10 +79,13 @@ export class ProcessMonitor {
     this.process.stop()
   }
 
-  logToStream (type, msg) {
+  pipeLog (type, msg) {
     this.ipcWrapper.send(this.id + '.log', JSON.stringify({
       type: type,
       content: msg
     }))
+  }
+  pipeStatus (status) {
+    this.ipcWrapper.send(this.id + '.status', status)
   }
 }
