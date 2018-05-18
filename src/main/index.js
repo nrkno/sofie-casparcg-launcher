@@ -5,6 +5,7 @@ import Conf from 'conf'
 import log from 'electron-log'
 
 import { ProcessMonitor } from './process'
+import { CasparCGHealthMonitor } from './casparcg'
 
 /**
  * Set `__static` path to static files in production
@@ -104,7 +105,7 @@ function startupProcesses () {
     e.sender.send('config', config.store)
   })
 
-  casparHost = new ProcessMonitor('casparcg', wrapper, config, 'casparcg.exe')
+  casparHost = new ProcessMonitor('casparcg', wrapper, config, 'casparcg.exe', new CasparCGHealthMonitor())
   mediaScanner = new ProcessMonitor('media-scanner', wrapper, config, 'scanner.exe')
 }
 

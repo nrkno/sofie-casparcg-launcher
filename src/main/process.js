@@ -5,11 +5,16 @@ import fs from 'fs'
 import stringArgv from 'string-argv'
 
 export class ProcessMonitor {
-  constructor (id, ipcWrapper, config, exeName) {
+  constructor (id, ipcWrapper, config, exeName, healthMon) {
     this.id = id
     this.ipcWrapper = ipcWrapper
     this.config = config
     this.exeName = exeName
+    this.healthMon = healthMon
+
+    if (this.healthMon) {
+      this.healthMon.init(this)
+    }
 
     this.ipcWrapper.on(this.id + '.control', (sender, cmd) => {
       log.info('Got process control command for ' + this.id + ': ' + cmd)
@@ -24,18 +29,19 @@ export class ProcessMonitor {
 
     config.onDidChange('basePath', () => this.reinit())
     config.onDidChange('args.' + id, () => this.reinit())
-    this.init()
+    this.init(true)
   }
 
   reinit () {
+    const restart = this.running()
     if (this.process) {
-      this.process.stop(() => this.init())
+      this.process.stop(() => this.init(restart))
     } else {
-      this.init()
+      this.init(false)
     }
   }
 
-  init () {
+  init (start) {
     const basePath = this.config.get('basePath', './')
     const procPath = path.join(basePath, this.exeName)
     log.info(`Booting Process ${procPath}`)
@@ -55,7 +61,6 @@ export class ProcessMonitor {
     }
 
     const args = this.config.get('args.' + this.id, '')
-    log.info(args)
     this.process = respawn(
       [this.exeName].concat(stringArgv(args)), {
         cwd: basePath
@@ -63,6 +68,10 @@ export class ProcessMonitor {
     )
 
     this.process.on('start', () => {
+      if (this.healthMon) {
+        this.healthMon.start()
+      }
+
       this.pipeLog('event', '== Process has started ==')
       this.pipeStatus('running')
     })
@@ -78,6 +87,9 @@ export class ProcessMonitor {
     })
     this.process.on('stop', () => {
       log.info(this.exeName + ' stop')
+      if (this.healthMon) {
+        this.healthMon.stop()
+      }
 
       this.pipeLog('event', '== Process has stopped ==')
       this.pipeStatus('stopped')
@@ -101,7 +113,13 @@ export class ProcessMonitor {
       this.pipeLog('event', '== Process has exited with code ' + code + ' ==')
     })
 
-    this.process.start()
+    if (start) {
+      this.process.start()
+    }
+  }
+
+  running () {
+    return this.process && this.process.status === 'running'
   }
 
   start () {
