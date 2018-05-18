@@ -30,9 +30,9 @@ function createWindow () {
    * Initial window options
    */
   mainWindow = new BrowserWindow({
-    height: 800,
+    height: 768,
     useContentSize: true,
-    width: 1920
+    width: process.env.NODE_ENV === 'development' ? 1600 : 1024
   })
 
   mainWindow.loadURL(winURL)
