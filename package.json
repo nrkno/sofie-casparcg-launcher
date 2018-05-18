@@ -2,7 +2,7 @@
   "name": "casparcg-launcher",
   "version": "0.0.0",
   "author": "Julian Waller <julian@superfly.tv>",
-  "description": "Restart and log ui for CasparCG",
+  "description": "Simple launcher for CasparCG",
   "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {
