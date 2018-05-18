@@ -10,6 +10,7 @@
             <b-button variant="warning" v-on:click="clearLog">Clear Log</b-button>
             <b-button variant="success" v-on:click="start">Start</b-button>
             <b-button variant="danger" v-on:click="stop">Stop</b-button>
+            <b-button variant="info" v-on:click="restart">Restart</b-button>
           </b-button-group>
         </div>
 
@@ -49,8 +50,14 @@
       start () {
         ipcRenderer.send(this.$route.params.id + '.control', 'start')
       },
+      restart () {
+        ipcRenderer.send(this.$route.params.id + '.control', 'restart')
+      },
 
       logClass (l) {
+        if (l.content.indexOf('[fatal]') !== -1) {
+          return 'fatal'
+        }
         if (l.content.indexOf('[error]') !== -1) {
           return 'error'
         }
@@ -100,6 +107,10 @@
   
   #log-panel li.log.error {
     color: red;
+  }
+  #log-panel li.log.fatal {
+    color: red;
+    font-weight: bold;
   }
   #log-panel li.log.warning {
     color: orange;

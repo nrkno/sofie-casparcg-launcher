@@ -54,17 +54,14 @@ export class ProcessMonitor {
       this.pipeLog('event', '== Process has exited with code ' + code + ' ==')
     })
 
-    this.ipcWrapper.on(id + '.control', (a, b) => {
-      log.info(b)
-      if (b === 'stop') {
+    this.ipcWrapper.on(id + '.control', (sender, cmd) => {
+      log.info('Got process control command for ' + this.id + ': ' + cmd)
+      if (cmd === 'stop') {
         this.stop()
-      } else if (b === 'start') {
+      } else if (cmd === 'start') {
         this.start()
-      } else if (b === 'restart') {
-        this.stop(() => {
-          // TODO - doesnt work
-          this.start()
-        })
+      } else if (cmd === 'restart') {
+        this.stop(() => this.start())
       }
     })
 
@@ -75,8 +72,8 @@ export class ProcessMonitor {
     this.process.start() // TODO - ensure not already
   }
 
-  stop () {
-    this.process.stop()
+  stop (cb) {
+    this.process.stop(cb)
   }
 
   pipeLog (type, msg) {
