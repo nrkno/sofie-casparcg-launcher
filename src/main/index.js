@@ -1,6 +1,7 @@
 'use strict'
 
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
+import Conf from 'conf'
 
 import { ProcessMonitor } from './process'
 
@@ -13,6 +14,11 @@ const log = require('electron-log')
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
+
+const config = new Conf({
+  cwd: process.env.PORTABLE_EXECUTABLE_DIR,
+  configName: 'casparcg-launcher.config'
+})
 
 let mainWindow
 const winURL = process.env.NODE_ENV === 'development'
@@ -50,6 +56,7 @@ function createWindow () {
   })
 
   mainWindow.webContents.once('did-finish-load', () => {
+    mainWindow.webContents.send('config', config.store)
     startupProcesses()
   })
 }
@@ -84,16 +91,22 @@ class IpcWrapper {
   }
 }
 
-const ccgPath = 'C:\\caspar\\2.1.0_NRK_RC1\\CasparCG Server\\server\\' // TODO - config file this
 let casparHost, mediaScanner
 
 function startupProcesses () {
   log.info('Starting child processes')
 
   const wrapper = new IpcWrapper(ipcMain, mainWindow.webContents)
+  wrapper.on('config.get', e => {
+    e.sender.send('config', config.store)
+  })
+  wrapper.on('config.set', (e, arg) => {
+    config.set(arg)
+    e.sender.send('config', config.store)
+  })
 
-  casparHost = new ProcessMonitor('casparcg', wrapper, ccgPath, 'casparcg.exe')
-  mediaScanner = new ProcessMonitor('media-scanner', wrapper, ccgPath, 'scanner.exe')
+  casparHost = new ProcessMonitor('casparcg', wrapper, config, 'casparcg.exe')
+  mediaScanner = new ProcessMonitor('media-scanner', wrapper, config, 'scanner.exe')
 }
 
 function stopProcesses () {
