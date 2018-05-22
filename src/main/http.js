@@ -46,6 +46,6 @@ export default function (config, processes) {
     res.send(Object.keys(processes))
   })
 
-  const port = config.get('api.port') || 3000
+  const port = config.get('api.port', 8005)
   app.listen(port, () => console.log(`http api listening on port ${port}!`))
 }

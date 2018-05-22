@@ -94,7 +94,7 @@ class IpcWrapper {
 
 let processes = {}
 
-if (config.get('api.port') > 0) {
+if (config.get('api.enable', false)) {
   setupApi(config, processes)
 }
 

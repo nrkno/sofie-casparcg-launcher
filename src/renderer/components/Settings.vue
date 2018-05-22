@@ -33,14 +33,21 @@
             </b-form-input>
           </b-form-group>
           
+          <b-form-group id="httpApiEnableGroup"
+                        label="Enable HTTP Api (Needs restart to apply):"
+                        label-for="httpApiEnableInput">
+            <b-form-checkbox id="httpApiEnableInput"
+                          v-model="config.api.enable">
+            </b-form-checkbox>
+          </b-form-group>
           
           <b-form-group id="httpApiPortGroup"
-                        label="HTTP Api Port (0 = disabled) (Needs restart):"
+                        label="HTTP Api Port (Needs restart to apply):"
                         label-for="httpApiPortInput">
             <b-form-input id="httpApiPortInput"
                           type="number"
                           v-model="config.api.port"
-                          placeholder="0">
+                          placeholder="8005">
             </b-form-input>
           </b-form-group>
 
@@ -60,6 +67,7 @@
     created () {
       ipcRenderer.on('config', (s, conf) => {
         this.config = conf
+        console.log(conf.api.enable)
 
         if (!this.config.args) {
           this.config.args = {}
@@ -73,6 +81,7 @@
     data () {
       return {
         config: {
+          api: {},
           args: {}
         }
       }
