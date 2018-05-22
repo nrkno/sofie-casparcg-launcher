@@ -11,6 +11,7 @@ export class ProcessMonitor {
     this.config = config
     this.exeName = exeName
     this.healthMon = healthMon
+    this.currentStatus = 'stopped'
 
     if (this.healthMon) {
       this.healthMon.init(this)
@@ -23,7 +24,7 @@ export class ProcessMonitor {
       } else if (cmd === 'start') {
         this.start()
       } else if (cmd === 'restart') {
-        this.stop(() => this.start())
+        this.restart()
       }
     })
 
@@ -134,6 +135,10 @@ export class ProcessMonitor {
     }
   }
 
+  restart () {
+    this.stop(() => this.start())
+  }
+
   pipeLog (type, msg) {
     this.ipcWrapper.send(this.id + '.log', JSON.stringify({
       type: type,
@@ -141,6 +146,7 @@ export class ProcessMonitor {
     }))
   }
   pipeStatus (status) {
+    this.currentStatus = status
     this.ipcWrapper.send(this.id + '.status', status)
   }
 }

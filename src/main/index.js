@@ -6,6 +6,7 @@ import log from 'electron-log'
 
 import { ProcessMonitor } from './process'
 import { CasparCGHealthMonitor } from './casparcg'
+import setupApi from './http'
 
 /**
  * Set `__static` path to static files in production
@@ -91,7 +92,11 @@ class IpcWrapper {
   }
 }
 
-let casparHost, mediaScanner
+let processes = {}
+
+if (config.get('api.port') > 0) {
+  setupApi(config, processes)
+}
 
 function startupProcesses () {
   log.info('Starting child processes')
@@ -105,13 +110,14 @@ function startupProcesses () {
     e.sender.send('config', config.store)
   })
 
-  casparHost = new ProcessMonitor('casparcg', wrapper, config, 'casparcg.exe', new CasparCGHealthMonitor())
-  mediaScanner = new ProcessMonitor('media-scanner', wrapper, config, 'scanner.exe')
+  processes['casparcg'] = new ProcessMonitor('casparcg', wrapper, config, 'casparcg.exe', new CasparCGHealthMonitor())
+  processes['media-scanner'] = new ProcessMonitor('media-scanner', wrapper, config, 'scanner.exe')
 }
 
 function stopProcesses () {
-  casparHost.stop()
-  mediaScanner.stop()
+  for (let proc in processes) {
+    processes[proc].stop()
+  }
 }
 
 /**

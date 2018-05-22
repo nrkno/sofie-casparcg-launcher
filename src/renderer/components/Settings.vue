@@ -32,6 +32,17 @@
                           placeholder="">
             </b-form-input>
           </b-form-group>
+          
+          
+          <b-form-group id="httpApiPortGroup"
+                        label="HTTP Api Port (0 = disabled) (Needs restart):"
+                        label-for="httpApiPortInput">
+            <b-form-input id="httpApiPortInput"
+                          type="number"
+                          v-model="config.api.port"
+                          placeholder="0">
+            </b-form-input>
+          </b-form-group>
 
         <b-button type="submit" variant="primary">Save</b-button>
         <b-button type="reset" variant="danger">Reset</b-button>
@@ -52,6 +63,9 @@
 
         if (!this.config.args) {
           this.config.args = {}
+        }
+        if (!this.config.api) {
+          this.config.api = {}
         }
       })
       ipcRenderer.send('config.get')
