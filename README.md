@@ -2,7 +2,21 @@
 
 > Simple launcher for CasparCG
 
-#### Build Setup
+### Features
+ * Presents log in a more readable format with lines coloured by severity
+ * Builds as a single exe that can be dropped into existing casparcg folder
+ * Allows for easy stopping and restarting of both casparcg and media-scanner
+ * Option to pass through command line options to each executable
+ * Basic http api to stop/start/restart each process remotely
+ * Auto restart each process upon crashing or exiting
+
+### Screenshots
+
+![](doc/screenshot.png)
+
+![](doc/settings.png)
+
+### Build Setup
 
 ``` bash
 # install dependencies
