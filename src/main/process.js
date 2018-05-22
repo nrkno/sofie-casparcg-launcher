@@ -43,7 +43,11 @@ export class ProcessMonitor {
   }
 
   init (start) {
-    const basePath = this.config.get('basePath', './')
+    let basePath = this.config.get('basePath', './')
+    if (!path.isAbsolute(basePath)) {
+      basePath = path.join(process.env.PORTABLE_EXECUTABLE_DIR, basePath)
+    }
+
     const procPath = path.join(basePath, this.exeName)
     log.info(`Booting Process ${procPath}`)
 
