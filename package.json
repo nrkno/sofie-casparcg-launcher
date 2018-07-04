@@ -63,6 +63,7 @@
     "express": "^4.16.3",
     "jquery": "^3.3.1",
     "respawn": "^2.5.0",
+    "serve-index": "^1.7.2",
     "string-argv": "^0.0.2",
     "vue": "^2.3.3",
     "vue-chat-scroll": "^1.2.1",

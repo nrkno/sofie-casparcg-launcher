@@ -2,7 +2,7 @@
   <b-container fluid>
     <b-row>
       <b-col>
-       <b-form @submit="onSubmit" @reset="onReset">
+        <b-form @submit="onSubmit" @reset="onReset">
           <b-form-group id="basePathInputGroup"
                         label="Base Path:"
                         label-for="basePathInput">
@@ -34,7 +34,7 @@
           </b-form-group>
           
           <b-form-group id="httpApiEnableGroup"
-                        label="Enable HTTP Api (Needs restart to apply):"
+                        label="Enable HTTP Api:"
                         label-for="httpApiEnableInput">
             <b-form-checkbox id="httpApiEnableInput"
                           v-model="config.api.enable">
@@ -42,7 +42,7 @@
           </b-form-group>
           
           <b-form-group id="httpApiPortGroup"
-                        label="HTTP Api Port (Needs restart to apply):"
+                        label="HTTP Api Port:"
                         label-for="httpApiPortInput">
             <b-form-input id="httpApiPortInput"
                           type="number"
@@ -50,11 +50,45 @@
                           placeholder="8005">
             </b-form-input>
           </b-form-group>
+          
+          <b-form-group id="httpApiProcessControlGroup"
+                        label="Enable HTTP Process control:"
+                        label-for="httpApiProcessControlInput">
+            <b-form-checkbox id="httpApiProcessControlInput"
+                          v-model="config.api.processControl">
+            </b-form-checkbox>
+          </b-form-group>
 
-        <b-button type="submit" variant="primary">Save</b-button>
-        <b-button type="reset" variant="danger">Reset</b-button>
+          <b-form-group id="httpApiStaticPathsGroup"
+                        label="HTTP Static paths:"
+                        label-for="httpApiStaticPathsTable">
+            <b-button type="submit" variant="primary" @click="onAddRow">Add static path</b-button>
+            <b-table striped :items="config.api.staticPaths" :fields="['name', 'path', 'actions']">
+              <template slot="name" slot-scope="data">
+                <b-form-input :id="'httpApiStaticPathName' + data.index"
+                          type="text" required
+                          v-model="config.api.staticPaths[data.index].name">
+                </b-form-input>
+              </template>
+              <template slot="path" slot-scope="data">
+                <b-form-input :id="'httpApiStaticPathPath' + data.index"
+                          type="text" required
+                          v-model="config.api.staticPaths[data.index].path">
+                </b-form-input>
+              </template>
+              <template slot="actions" slot-scope="row">
+                <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
+                <b-button size="sm" @click.stop="onRemoveRow(row)" class="mr-2">
+                Remove
+                </b-button>
+              </template>
+            </b-table>
+          </b-form-group>          
 
-       </b-form>
+          <b-button type="submit" variant="primary">Save</b-button>
+          <b-button type="reset" variant="danger">Reset</b-button>
+
+        </b-form>
       </b-col>
     </b-row>
   </b-container>
@@ -75,13 +109,18 @@
         if (!this.config.api) {
           this.config.api = {}
         }
+        if (!this.config.api.staticPaths) {
+          this.config.api.staticPaths = []
+        }
       })
       ipcRenderer.send('config.get')
     },
     data () {
       return {
         config: {
-          api: {},
+          api: {
+            staticPaths: []
+          },
           args: {}
         }
       }
@@ -89,12 +128,21 @@
 
     methods: {
       onSubmit (evt) {
+        // TODO - some data validation (especially staticPaths)
+
         evt.preventDefault()
         ipcRenderer.send('config.set', this.config)
       },
       onReset (evt) {
         evt.preventDefault()
         ipcRenderer.send('config.get')
+      },
+      onAddRow (evt) {
+        evt.preventDefault()
+        this.config.api.staticPaths.push({})
+      },
+      onRemoveRow (row) {
+        this.config.api.staticPaths.splice(row.index, 1)
       }
     }
   }

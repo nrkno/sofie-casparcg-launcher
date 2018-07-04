@@ -6,7 +6,7 @@ import log from 'electron-log'
 
 import { ProcessMonitor } from './process'
 import { CasparCGHealthMonitor } from './casparcg'
-import setupApi from './http'
+import { HttpMonitor } from './http'
 
 /**
  * Set `__static` path to static files in production
@@ -67,6 +67,7 @@ app.on('ready', createWindow)
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     stopProcesses()
+    httpMonitor.stop()
     app.quit()
   }
 })
@@ -93,10 +94,7 @@ class IpcWrapper {
 }
 
 let processes = {}
-
-if (config.get('api.enable', false)) {
-  setupApi(config, processes)
-}
+let httpMonitor = new HttpMonitor(config, processes)
 
 function startupProcesses () {
   log.info('Starting child processes')
