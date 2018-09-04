@@ -1,4 +1,4 @@
-# casparcg-launcher
+# Sofie: The Modern TV News Studio Automation System (launcher for the CasparCG Server process)
 
 > Simple launcher for CasparCG
 
