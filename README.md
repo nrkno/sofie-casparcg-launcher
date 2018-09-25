@@ -1,5 +1,7 @@
 # Sofie: The Modern TV News Studio Automation System (launcher for the CasparCG Server process)
 
+This is used in the [**Sofie** TV News Studio Automation System](https://github.com/nrkno/Sofie-TV-automation/).
+
 > Simple launcher for CasparCG
 
 ### Features
