@@ -34,7 +34,7 @@
           </b-form-group>
           
           <b-form-group id="httpApiEnableGroup"
-                        label="Enable HTTP Api:"
+                        label="Enable HTTP Server:"
                         label-for="httpApiEnableInput">
             <b-form-checkbox id="httpApiEnableInput"
                           v-model="config.api.enable">
@@ -42,7 +42,7 @@
           </b-form-group>
           
           <b-form-group id="httpApiPortGroup"
-                        label="HTTP Api Port:"
+                        label="HTTP Server Port:"
                         label-for="httpApiPortInput">
             <b-form-input id="httpApiPortInput"
                           type="number"
@@ -52,7 +52,7 @@
           </b-form-group>
           
           <b-form-group id="httpApiProcessControlGroup"
-                        label="Enable HTTP Process control:"
+                        label="Enable HTTP Process control API:"
                         label-for="httpApiProcessControlInput">
             <b-form-checkbox id="httpApiProcessControlInput"
                           v-model="config.api.processControl">
