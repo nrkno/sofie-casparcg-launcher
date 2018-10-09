@@ -16,6 +16,13 @@ if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
 
+log.transports.file.level = 'info'
+
+process.on('uncaughtException', function (err) {
+  log.error('uncaught exception: ', err.stack)
+  process.exit(1)
+})
+
 const config = new Conf({
   cwd: process.env.PORTABLE_EXECUTABLE_DIR,
   configName: 'casparcg-launcher.config'
@@ -50,10 +57,13 @@ function createWindow () {
     if (choice === 1) {
       e.preventDefault()
     }
+
+    log.info('shutting down')
   })
 
   mainWindow.on('closed', () => {
     mainWindow = null
+    log.info('closed')
   })
 
   mainWindow.webContents.once('did-finish-load', () => {
