@@ -3,7 +3,7 @@ import log from 'electron-log'
 
 const startupDelay = 5000
 const pingInterval = 5000
-const pingTimeout = 8000
+const pingTimeout = 12000 // 2 pings
 
 export class CasparCGHealthMonitor {
   init (procMon) {
@@ -32,8 +32,8 @@ export class CasparCGHealthMonitor {
         this.lastReceived = Date.now()
       })
       this.client.on('error', e => {
+        log.error('[' + this.procMon.id + '] ' + e)
         if (this.interval && this.procMon.running()) {
-          log.error('[' + this.procMon.id + '] ' + e)
           this.procMon.stop(() => this.procMon.start())
         }
       })
@@ -48,13 +48,19 @@ export class CasparCGHealthMonitor {
     log.info('[' + this.procMon.id + '] ping timer starting')
 
     this.lastReceived = Date.now()
+    this.lastSent = Date.now()
+
     this.interval = setInterval(() => {
-      if (Date.now() - this.lastReceived > pingTimeout) {
-        log.warn('[' + this.procMon.id + '] ping timeout')
+      if (Date.now() - this.lastSent > pingTimeout) {
+        log.warn('[' + this.procMon.id + '] time skipped by ' + (Date.now() - this.lastSent))
+      } else if (this.lastSent - this.lastReceived > pingTimeout) {
+        log.warn('[' + this.procMon.id + '] ping timeout after ' + (this.lastSent - this.lastReceived))
+        this.procMon.pipeLog('log', '[error] ping timeout after ' + (this.lastSent - this.lastReceived))
         this.procMon.stop(() => this.procMon.start())
         return
       }
 
+      this.lastSent = Date.now()
       this.client.write('PING\r\n')
     }, pingInterval)
   }
