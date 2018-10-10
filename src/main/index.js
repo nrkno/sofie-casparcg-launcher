@@ -99,7 +99,9 @@ class IpcWrapper {
   }
 
   send (event, msg) {
-    this.ipcOut.send(event, msg)
+    if (!this.ipcOut.isDestroyed()) {
+      this.ipcOut.send(event, msg)
+    }
   }
 }
 
