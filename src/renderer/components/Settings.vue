@@ -23,6 +23,14 @@
             </b-form-input>
           </b-form-group>
           
+          <b-form-group id="casparcgHealthInputGroup"
+                        label="CasparCG Healthcheck:"
+                        label-for="casparcgHealthInput">
+            <b-form-checkbox id="casparcgHealthInput"
+                          v-model="config.health.casparcg">
+            </b-form-checkbox>
+          </b-form-group>
+          
           <b-form-group id="scannerArgsInputGroup"
                         label="Media Scanner Arguments:"
                         label-for="scannerArgsInput">
@@ -101,7 +109,6 @@
     created () {
       ipcRenderer.on('config', (s, conf) => {
         this.config = conf
-        console.log(conf.api.enable)
 
         if (!this.config.args) {
           this.config.args = {}
@@ -112,6 +119,9 @@
         if (!this.config.api.staticPaths) {
           this.config.api.staticPaths = []
         }
+        if (!this.config.health) {
+          this.config.health = {}
+        }
       })
       ipcRenderer.send('config.get')
     },
@@ -121,7 +131,8 @@
           api: {
             staticPaths: []
           },
-          args: {}
+          args: {},
+          health: {}
         }
       }
     },

@@ -28,6 +28,11 @@ const config = new Conf({
   configName: 'casparcg-launcher.config'
 })
 
+// Set some updated defaults. This should be done better in future
+if (!config.has('health')) {
+  config.set('health.casparcg', true)
+}
+
 let mainWindow
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
@@ -120,7 +125,7 @@ function startupProcesses () {
     e.sender.send('config', config.store)
   })
 
-  processes['casparcg'] = new ProcessMonitor('casparcg', wrapper, config, 'casparcg.exe', new CasparCGHealthMonitor())
+  processes['casparcg'] = new ProcessMonitor('casparcg', wrapper, config, 'casparcg.exe', new CasparCGHealthMonitor(config, 'health.casparcg'))
   processes['media-scanner'] = new ProcessMonitor('media-scanner', wrapper, config, 'scanner.exe')
 }
 
