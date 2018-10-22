@@ -3,15 +3,7 @@
     <b-row>
       <b-col>
         <div id="status-bar">
-          <span>
-            {{ data.status }}
-          </span>
-          <b-button-group>
-            <b-button variant="warning" v-on:click="clearLog">Clear Log</b-button>
-            <b-button variant="success" v-on:click="start">Start</b-button>
-            <b-button variant="danger" v-on:click="stop">Stop</b-button>
-            <b-button variant="info" v-on:click="restart">Restart</b-button>
-          </b-button-group>
+          <process-controls :id="this.$route.params.id" showClear="1" />
         </div>
 
         <ul id="log-panel" v-chat-scroll="{always: false}">
@@ -25,12 +17,11 @@
 </template>
 
 <script>
-  const {ipcRenderer} = require('electron')
+  import ProcessControls from './ProcessControls'
 
   export default {
-    created () {
-      // TODO - fix this not running on the first navigate to tab
-      this.$store.dispatch('init', { id: this.$route.params.id })
+    components: {
+      'process-controls': ProcessControls
     },
     data () {
       return {
@@ -46,19 +37,6 @@
     },
 
     methods: {
-      clearLog () {
-        this.$store.dispatch('logClear', { id: this.$route.params.id })
-      },
-      stop () {
-        ipcRenderer.send(this.$route.params.id + '.control', 'stop')
-      },
-      start () {
-        ipcRenderer.send(this.$route.params.id + '.control', 'start')
-      },
-      restart () {
-        ipcRenderer.send(this.$route.params.id + '.control', 'restart')
-      },
-
       logClass (l) {
         if (l.content.indexOf('[fatal]') !== -1) {
           return 'fatal'
@@ -82,10 +60,6 @@
 <style scoped>
   #status-bar {
     text-align: right;
-  }
-
-  .btn-group {
-    margin: 15px;
   }
   
   #log-panel {

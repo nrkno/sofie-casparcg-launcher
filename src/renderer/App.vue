@@ -3,6 +3,7 @@
     <b-navbar toggleable="md" type="dark" variant="dark" sticky>
 
       <b-navbar-nav>
+        <b-nav-item to="/" exact>Status</b-nav-item>
         <b-nav-item v-bind:key="val.id" v-for="val in processes" :to="'/' + val.id">{{ val.name }}</b-nav-item>
       </b-navbar-nav>
       

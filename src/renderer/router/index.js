@@ -16,8 +16,13 @@ export default new Router({
       component: require('@/components/ProcessTab').default
     },
     {
+      path: '/',
+      name: 'status-page',
+      component: require('@/components/Status').default
+    },
+    {
       path: '*',
-      redirect: '/casparcg'
+      redirect: '/'
     }
   ]
 })
