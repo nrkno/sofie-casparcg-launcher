@@ -4,18 +4,13 @@ import path from 'path'
 import fs from 'fs'
 import stringArgv from 'string-argv'
 
+import { CasparCGHealthMonitor } from './casparcg'
+
 export class ProcessMonitor {
-  constructor (id, ipcWrapper, config, exeName, healthMon) {
+  constructor (id, ipcWrapper, config) {
     this.id = id
     this.ipcWrapper = ipcWrapper
-    this.config = config
-    this.exeName = exeName
-    this.healthMon = healthMon
     this.currentStatus = 'stopped'
-
-    if (this.healthMon) {
-      this.healthMon.init(this)
-    }
 
     this.ipcWrapper.on(this.id + '.control', (sender, cmd) => {
       log.info('[' + this.id + '] Got process control command : ' + cmd)
@@ -28,9 +23,29 @@ export class ProcessMonitor {
       }
     })
 
-    config.onDidChange('basePath', () => this.reinit())
-    config.onDidChange('args.' + id, () => this.reinit())
-    this.init(true)
+    this.updateConfig(config)
+  }
+
+  updateConfig (newConfig) {
+    const changed = true // TODO
+
+    this.config = newConfig
+    this.config.exeName = this.config.exeName || ''
+
+    if (changed) {
+      if (this.healthMon) {
+        this.healthMon.stop()
+        this.healthMon = undefined
+      }
+
+      switch (this.config.health) {
+        case 'casparcg':
+          this.healthMon = new CasparCGHealthMonitor(this)
+          break
+      }
+
+      this.reinit()
+    }
   }
 
   reinit () {
@@ -43,12 +58,16 @@ export class ProcessMonitor {
   }
 
   init (start) {
-    let basePath = this.config.get('basePath', './')
+    let basePath = this.config.basePath
     if (!path.isAbsolute(basePath)) {
       basePath = path.join(process.env.PORTABLE_EXECUTABLE_DIR, basePath)
     }
 
-    const procPath = path.join(basePath, this.exeName)
+    let procPath = this.config.exeName
+    if (!path.isAbsolute(procPath)) {
+      procPath = path.join(basePath, procPath)
+    }
+
     log.info(`[${this.id}] Booting Process ${procPath}`)
 
     let fileExists
@@ -65,9 +84,9 @@ export class ProcessMonitor {
       return
     }
 
-    const args = this.config.get('args.' + this.id, '')
+    const args = this.config.args || ''
     this.process = respawn(
-      [this.exeName].concat(stringArgv(args)), {
+      [this.config.exeName].concat(stringArgv(args)), {
         cwd: basePath
       }
     )
@@ -77,7 +96,7 @@ export class ProcessMonitor {
         this.healthMon.start()
       }
 
-      log.info('[' + this.id + '] ' + this.exeName + ' start')
+      log.info('[' + this.id + '] ' + this.config.exeName + ' start')
       this.pipeLog('event', '== Process has started ==')
       this.pipeStatus('running')
     })
@@ -90,7 +109,7 @@ export class ProcessMonitor {
       lines.forEach(l => this.pipeLog('log', l))
     })
     this.process.on('stop', () => {
-      log.info('[' + this.id + '] ' + this.exeName + ' stop')
+      log.info('[' + this.id + '] ' + this.config.exeName + ' stop')
       if (this.healthMon) {
         this.healthMon.stop()
       }
@@ -99,20 +118,20 @@ export class ProcessMonitor {
       this.pipeStatus('stopped')
     })
     this.process.on('crash', () => {
-      log.info('[' + this.id + '] ' + this.exeName + ' crash')
+      log.info('[' + this.id + '] ' + this.config.exeName + ' crash')
       this.pipeLog('event', '== Process has crashed ==')
     })
     this.process.on('sleep', () => {
-      log.info('[' + this.id + '] ' + this.exeName + ' sleep')
+      log.info('[' + this.id + '] ' + this.config.exeName + ' sleep')
       this.pipeLog('event', '== Process is sleeping ==')
     })
     this.process.on('spawn', (process) => {
-      log.info('[' + this.id + '] ' + this.exeName + ' spawn ' + process.pid)
+      log.info('[' + this.id + '] ' + this.config.exeName + ' spawn ' + process.pid)
 
       this.pipeLog('event', '== Process is starting ==')
     })
     this.process.on('exit', (code, signal) => {
-      log.info('[' + this.id + '] ' + this.exeName + ' exit ' + code + ' ' + signal)
+      log.info('[' + this.id + '] ' + this.config.exeName + ' exit ' + code + ' ' + signal)
 
       this.pipeLog('event', '== Process has exited with code ' + code + ' ==')
     })
@@ -143,13 +162,16 @@ export class ProcessMonitor {
   }
 
   pipeLog (type, msg) {
-    this.ipcWrapper.send(this.id + '.log', JSON.stringify({
-      type: type,
-      content: msg
+    this.ipcWrapper.send('process.log', JSON.stringify({
+      id: this.id,
+      data: {
+        type: type,
+        content: msg
+      }
     }))
   }
   pipeStatus (status) {
     this.currentStatus = status
-    this.ipcWrapper.send(this.id + '.status', status)
+    this.ipcWrapper.send('process.status', JSON.stringify({ id: this.id, status: status }))
   }
 }

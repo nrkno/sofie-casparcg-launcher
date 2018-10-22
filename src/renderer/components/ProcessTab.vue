@@ -28,15 +28,20 @@
   const {ipcRenderer} = require('electron')
 
   export default {
+    created () {
+      // TODO - fix this not running on the first navigate to tab
+      this.$store.dispatch('init', { id: this.$route.params.id })
+    },
     data () {
       return {
-        data: this.$store.state.Process[this.$route.params.id]
+        data: this.$store.state.Process[this.$route.params.id] || {}
       }
     },
 
     watch: {
       '$route' (to, from) {
-        this.data = this.$store.state.Process[to.params.id]
+        this.$store.dispatch('init', { id: this.$route.params.id })
+        this.data = this.$store.state.Process[to.params.id] || {}
       }
     },
 

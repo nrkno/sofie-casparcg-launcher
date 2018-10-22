@@ -2,14 +2,22 @@ const state = {}
 
 const maxRows = 500
 
-const mutations = {
-  INIT (state, {id}) {
+function ensureStateExists (state, id) {
+  if (!state[id]) {
     state[id] = {
       log: [],
       status: 'unknown'
     }
+  }
+}
+
+const mutations = {
+  INIT (state, {id}) {
+    ensureStateExists(state, id)
   },
   LOG_LINE (state, {id, data}) {
+    ensureStateExists(state, id)
+
     state[id].log.push(data)
 
     if (state[id].log.length > maxRows) {
@@ -18,10 +26,14 @@ const mutations = {
   },
 
   LOG_CLEAR (state, {id}) {
+    ensureStateExists(state, id)
+
     state[id].log.splice(0)
   },
 
   SET_STATUS (state, {id, status}) {
+    ensureStateExists(state, id)
+
     state[id].status = status
   }
 }
@@ -31,7 +43,6 @@ const actions = {
     commit('INIT', {id})
   },
   logLine ({ commit }, {id, data}) {
-    // do something async
     commit('LOG_LINE', {id, data})
   },
   logClear ({ commit }, data) {

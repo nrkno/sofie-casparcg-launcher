@@ -16,15 +16,11 @@ smoothscroll.polyfill()
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.config.productionTip = false
 
-const ids = ['casparcg', 'media-scanner']
-ids.forEach(id => {
-  store.dispatch('init', {id})
-  ipcRenderer.on(id + '.log', (e, data) => {
-    store.dispatch('logLine', { id: id, data: JSON.parse(data) })
-  })
-  ipcRenderer.on(id + '.status', (e, status) => {
-    store.dispatch('setStatus', { id, status })
-  })
+ipcRenderer.on('process.log', (e, data) => {
+  store.dispatch('logLine', JSON.parse(data))
+})
+ipcRenderer.on('process.status', (e, status) => {
+  store.dispatch('setStatus', JSON.parse(status))
 })
 
 Vue.use(BootstrapVue)

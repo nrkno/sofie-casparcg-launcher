@@ -5,7 +5,6 @@ import Conf from 'conf'
 import log from 'electron-log'
 
 import { ProcessMonitor } from './process'
-import { CasparCGHealthMonitor } from './casparcg'
 import { HttpMonitor } from './http'
 
 /**
@@ -28,9 +27,44 @@ const config = new Conf({
   configName: 'casparcg-launcher.config'
 })
 
-// Set some updated defaults. This should be done better in future
-if (!config.has('health')) {
-  config.set('health.casparcg', true)
+console.log('Loading config from:', process.env.PORTABLE_EXECUTABLE_DIR)
+
+// Simple versioning for config
+const configVersion = config.get('version', 0)
+if (configVersion < 1) {
+  const processes = []
+  processes.push({
+    id: 'casparcg',
+    name: 'CasparCG',
+    exeName: 'casparcg.exe',
+    args: config.get('args.casparcg', ''),
+    health: config.get('health.casparcg', true) ? 'casparcg' : undefined
+  })
+  processes.push({
+    id: 'scanner',
+    name: 'Media Scanner',
+    exeName: 'scanner.exe',
+    args: config.get('args.media-scanner', '')
+  })
+
+  if (config.store.exe) {
+    const keys = Object.keys(config.store.exe)
+    for (let k of keys) {
+      processes.push({
+        id: k,
+        name: k,
+        exeName: config.store.exe[k],
+        args: config.get('args.' + k, '')
+      })
+    }
+  }
+
+  config.set('processes', processes)
+  config.set('version', 1)
+
+  config.delete('args')
+  config.delete('exe')
+  config.delete('health')
 }
 
 let mainWindow
@@ -125,8 +159,52 @@ function startupProcesses () {
     e.sender.send('config', config.store)
   })
 
-  processes['casparcg'] = new ProcessMonitor('casparcg', wrapper, config, 'casparcg.exe', new CasparCGHealthMonitor(config, 'health.casparcg'))
-  processes['media-scanner'] = new ProcessMonitor('media-scanner', wrapper, config, 'scanner.exe')
+  wrapper.on('processes.get', e => {
+    const data = config.get('processes', [])
+    const procNames = []
+    for (let proc of data) {
+      procNames.push({ id: proc.id, name: proc.name || proc.id })
+    }
+
+    e.sender.send('processes.get', procNames)
+  })
+
+  function updateProcesses (data, oldData) {
+    const procNames = []
+
+    for (let procData of data) {
+      procNames.push({ id: procData.id, name: procData.name || procData.id })
+
+      const procConfig = Object.assign({
+        basePath: config.get('basePath', './')
+      }, procData)
+
+      if (!processes[procData.id]) {
+        // Create new process
+        processes[procData.id] = new ProcessMonitor(procData.id, wrapper, procConfig)
+      } else {
+        // Update running
+        processes[procData.id].updateConfig(procConfig)
+      }
+    }
+
+    for (let procData of oldData) {
+      if (procNames.find(p => p.id === procData.id)) continue // Still in use
+      if (!processes[procData.id]) continue // Not in use
+
+      processes[procData.id].stop()
+      delete processes[procData.id]
+    }
+
+    wrapper.send('processes.get', procNames)
+  }
+
+  config.onDidChange('processes', updateProcesses)
+  config.onDidChange('basePath', () => {
+    const data = config.get('processes')
+    updateProcesses(data, data)
+  })
+  updateProcesses(config.get('processes'), [])
 }
 
 function stopProcesses () {

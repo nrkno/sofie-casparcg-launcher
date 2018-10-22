@@ -6,33 +6,12 @@ const pingInterval = 5000
 const pingTimeout = 12000 // 2 pings
 
 export class CasparCGHealthMonitor {
-  constructor (config, keyName) {
-    this.config = config
-    this.keyName = keyName
-
-    console.log(this.config.get(keyName))
-
-    config.onDidChange(keyName, (val, oldVal) => {
-      if (oldVal === val) {
-      } else if (val) {
-        this.start()
-      } else {
-        this.stop()
-      }
-    })
-  }
-
-  init (procMon) {
+  constructor (procMon) {
     this.procMon = procMon
   }
 
   start () {
     if (!this.procMon) {
-      return
-    }
-
-    // check enabled in config
-    if (!this.config.get(this.keyName, false)) {
       return
     }
 
@@ -45,11 +24,6 @@ export class CasparCGHealthMonitor {
       this.client.on('close', () => {
         log.info('[' + this.procMon.id + '] ping connection closed')
         this.stopPingTimer()
-
-        if (!this.config.get(this.keyName, false)) {
-          // If not enabled, then don't try to restart
-          return
-        }
 
         if (this.interval && this.procMon.running()) {
           this.procMon.stop(() => this.procMon.start())
@@ -70,11 +44,6 @@ export class CasparCGHealthMonitor {
 
   startPingTimer () {
     if (this.interval) {
-      return
-    }
-
-    if (!this.config.get(this.keyName, false)) {
-      // If not enabled then dont start
       return
     }
 
@@ -106,13 +75,14 @@ export class CasparCGHealthMonitor {
   }
 
   stop () {
+    this.stopPingTimer()
+
     if (!this.client) {
       return
     }
 
     log.info('[' + this.procMon.id + '] stopping healthcheck')
 
-    this.stopPingTimer()
     this.client.end()
   }
 }

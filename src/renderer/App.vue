@@ -3,8 +3,7 @@
     <b-navbar toggleable="md" type="dark" variant="dark" sticky>
 
       <b-navbar-nav>
-        <b-nav-item to="/casparcg">CasparCG</b-nav-item>
-        <b-nav-item to="/media-scanner">Media Scanner</b-nav-item>
+        <b-nav-item v-bind:key="val.id" v-for="val in processes" :to="'/' + val.id">{{ val.name }}</b-nav-item>
       </b-navbar-nav>
       
       <b-navbar-nav  class="ml-auto">
@@ -17,8 +16,22 @@
 </template>
 
 <script>
+  const {ipcRenderer} = require('electron')
+
   export default {
-    name: 'casparcg-launcher'
+    name: 'casparcg-launcher',
+
+    created () {
+      ipcRenderer.on('processes.get', (s, data) => {
+        this.processes = data || []
+      })
+      ipcRenderer.send('processes.get')
+    },
+    data () {
+      return {
+        processes: []
+      }
+    }
   }
 </script>
 

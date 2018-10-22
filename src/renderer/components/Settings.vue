@@ -3,7 +3,9 @@
     <b-row>
       <b-col>
         <b-form @submit="onSubmit" @reset="onReset">
+          <legend>Processes</legend>
           <b-form-group id="basePathInputGroup"
+                        horizontal
                         label="Base Path:"
                         label-for="basePathInput">
             <b-form-input id="basePathInput"
@@ -12,36 +14,51 @@
                           placeholder="./">
             </b-form-input>
           </b-form-group>
-          
-          <b-form-group id="casparcgArgsInputGroup"
-                        label="CasparCG Arguments:"
-                        label-for="casparcgArgsInput">
-            <b-form-input id="casparcgArgsInput"
+
+          <b-form-group id="processesGroup"
+                        label-for="processesTable">
+            <b-button type="submit" variant="primary" @click="onAddProcessRow">Add process</b-button>
+            <b-table striped :items="config.processes" :fields="[
+                'name',
+                { key: 'exeName', label: 'Executable' },
+                'args', 
+                { key: 'health', label: 'Health Check' },
+                'actions'
+              ]">
+              <template slot="name" slot-scope="data">
+                <b-form-input :id="'processName' + data.index"
+                          type="text" required
+                          v-model="config.processes[data.index].name">
+                </b-form-input>
+              </template>
+              <template slot="exeName" slot-scope="data" label="Executable">
+                <b-form-input :id="'processExeName' + data.index"
+                          type="text" required
+                          v-model="config.processes[data.index].exeName">
+                </b-form-input>
+              </template>
+              <template slot="args" slot-scope="data">
+                <b-form-input :id="'processArgs' + data.index"
                           type="text"
-                          v-model="config.args.casparcg"
-                          placeholder="">
-            </b-form-input>
+                          v-model="config.processes[data.index].args">
+                </b-form-input>
+              </template>
+              <template slot="health" slot-scope="data">
+                <b-form-select :id="'processArgs' + data.index" :options="healthOptions" class="mb-3" 
+                          v-model="config.processes[data.index].health" />
+              </template>
+              <template slot="actions" slot-scope="row">
+                <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
+                <b-button size="sm" @click.stop="onRemoveProcessRow(row)" class="mr-2">
+                Remove
+                </b-button>
+              </template>
+            </b-table>
           </b-form-group>
-          
-          <b-form-group id="casparcgHealthInputGroup"
-                        label="CasparCG Healthcheck:"
-                        label-for="casparcgHealthInput">
-            <b-form-checkbox id="casparcgHealthInput"
-                          v-model="config.health.casparcg">
-            </b-form-checkbox>
-          </b-form-group>
-          
-          <b-form-group id="scannerArgsInputGroup"
-                        label="Media Scanner Arguments:"
-                        label-for="scannerArgsInput">
-            <b-form-input id="scannerArgsInput"
-                          type="text"
-                          v-model="config.args['media-scanner']"
-                          placeholder="">
-            </b-form-input>
-          </b-form-group>
-          
+
+          <legend>HTTP</legend>
           <b-form-group id="httpApiEnableGroup"
+                        horizontal
                         label="Enable HTTP Server:"
                         label-for="httpApiEnableInput">
             <b-form-checkbox id="httpApiEnableInput"
@@ -50,6 +67,7 @@
           </b-form-group>
           
           <b-form-group id="httpApiPortGroup"
+                        horizontal
                         label="HTTP Server Port:"
                         label-for="httpApiPortInput">
             <b-form-input id="httpApiPortInput"
@@ -60,7 +78,8 @@
           </b-form-group>
           
           <b-form-group id="httpApiProcessControlGroup"
-                        label="Enable HTTP Process control API:"
+                        horizontal
+                        label="Process control API:"
                         label-for="httpApiProcessControlInput">
             <b-form-checkbox id="httpApiProcessControlInput"
                           v-model="config.api.processControl">
@@ -68,9 +87,9 @@
           </b-form-group>
 
           <b-form-group id="httpApiStaticPathsGroup"
-                        label="HTTP Static paths:"
+                        label="Static paths"
                         label-for="httpApiStaticPathsTable">
-            <b-button type="submit" variant="primary" @click="onAddRow">Add static path</b-button>
+            <b-button type="submit" variant="primary" @click="onAddStaticPathRow">Add static path</b-button>
             <b-table striped :items="config.api.staticPaths" :fields="['name', 'path', 'actions']">
               <template slot="name" slot-scope="data">
                 <b-form-input :id="'httpApiStaticPathName' + data.index"
@@ -86,12 +105,12 @@
               </template>
               <template slot="actions" slot-scope="row">
                 <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
-                <b-button size="sm" @click.stop="onRemoveRow(row)" class="mr-2">
+                <b-button size="sm" @click.stop="onRemoveStaticPathRow(row)" class="mr-2">
                 Remove
                 </b-button>
               </template>
             </b-table>
-          </b-form-group>          
+          </b-form-group>
 
           <b-button type="submit" variant="primary">Save</b-button>
           <b-button type="reset" variant="danger">Reset</b-button>
@@ -113,17 +132,11 @@
       ipcRenderer.on('config', (s, conf) => {
         this.config = conf
 
-        if (!this.config.args) {
-          this.config.args = {}
-        }
         if (!this.config.api) {
           this.config.api = {}
         }
         if (!this.config.api.staticPaths) {
           this.config.api.staticPaths = []
-        }
-        if (!this.config.health) {
-          this.config.health = {}
         }
       })
       ipcRenderer.send('config.get')
@@ -131,12 +144,15 @@
     data () {
       return {
         version: packageJson.version,
+        healthOptions: [
+          { value: undefined, text: 'None' },
+          { value: 'casparcg', text: 'CasparCG Ping' }
+        ],
         config: {
           api: {
             staticPaths: []
           },
-          args: {},
-          health: {}
+          processes: []
         }
       }
     },
@@ -152,12 +168,21 @@
         evt.preventDefault()
         ipcRenderer.send('config.get')
       },
-      onAddRow (evt) {
+      onAddStaticPathRow (evt) {
         evt.preventDefault()
         this.config.api.staticPaths.push({})
       },
-      onRemoveRow (row) {
+      onRemoveStaticPathRow (row) {
         this.config.api.staticPaths.splice(row.index, 1)
+      },
+      onAddProcessRow (evt) {
+        evt.preventDefault()
+        this.config.processes.push({
+          id: Math.random().toString(36).substring(7)
+        })
+      },
+      onRemoveProcessRow (row) {
+        this.config.processes.splice(row.index, 1)
       }
     }
   }
