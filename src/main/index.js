@@ -182,6 +182,7 @@ function startupProcesses () {
       if (!processes[procData.id]) {
         // Create new process
         processes[procData.id] = new ProcessMonitor(procData.id, wrapper, procConfig)
+        processes[procData.id].start()
       } else {
         // Update running
         processes[procData.id].updateConfig(procConfig)

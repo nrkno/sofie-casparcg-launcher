@@ -33,6 +33,9 @@
     created () {
       ipcRenderer.on('processes.get', (s, data) => {
         this.processes = data || []
+
+        // ensure they have all been init
+        for (let p of this.processes) { this.$store.dispatch('init', { id: p.id }) }
       })
       ipcRenderer.send('processes.get')
     },

@@ -3,6 +3,7 @@ import respawn from 'respawn'
 import path from 'path'
 import fs from 'fs'
 import stringArgv from 'string-argv'
+import equal from 'deep-equal'
 
 import { CasparCGHealthMonitor } from './casparcg'
 
@@ -27,7 +28,7 @@ export class ProcessMonitor {
   }
 
   updateConfig (newConfig) {
-    const changed = true // TODO
+    const changed = !equal(newConfig, this.config)
 
     this.config = newConfig
     this.config.exeName = this.config.exeName || ''
