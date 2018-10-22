@@ -57,7 +57,7 @@
     }
   },
   "dependencies": {
-    "bootstrap-vue": "^2.0.0-rc.10",
+    "bootstrap-vue": "2.0.0-rc.10",
     "conf": "^1.4.0",
     "electron-log": "^2.2.14",
     "express": "^4.16.3",
