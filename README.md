@@ -8,14 +8,20 @@ This is used in the [**Sofie** TV News Studio Automation System](https://github.
  * Presents log in a more readable format with lines coloured by severity
  * Builds as a single exe that can be dropped into existing casparcg folder
  * Allows for easy stopping and restarting of both casparcg and media-scanner
+ * Allows for running other processes (eg custom clients)
  * Option to pass through command line options to each executable
- * Basic http api to stop/start/restart each process remotely
  * Auto restart each process upon crashing or exiting
+ * Basic http api to stop/start/restart each process remotely
  * Serve folders over http (eg templates, media)
+ * Status page to see an overview of process status
+
+ See the [changelog](CHANGELOG.md) for more information
 
 ### Screenshots
 
-![](doc/screenshot.png)
+![](doc/status.png)
+
+![](doc/log.png)
 
 ![](doc/settings.png)
 
