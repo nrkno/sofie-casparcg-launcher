@@ -21,7 +21,7 @@
             <b-table striped :items="config.processes" :fields="[
                 'name',
                 { key: 'exeName', label: 'Executable' },
-                'args', 
+                { key: 'args', label: 'Arguments' },
                 { key: 'health', label: 'Health Check' },
                 'actions'
               ]">

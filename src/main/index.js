@@ -105,6 +105,12 @@ function createWindow () {
     log.info('closed')
   })
 
+  // Block new windows being opened on ctrl/shift/alt+click or middle-click
+  // Note: this does stop navigation too, but is safer than forcing mainWindow to the new url
+  mainWindow.webContents.on('new-window', (e, url) => {
+    e.preventDefault()
+  })
+
   mainWindow.webContents.once('did-finish-load', () => {
     mainWindow.webContents.send('config', config.store)
     startupProcesses()
