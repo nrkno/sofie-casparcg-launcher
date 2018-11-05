@@ -1,6 +1,8 @@
 import express from 'express'
 import path from 'path'
 import serveIndex from 'serve-index'
+import fs from 'fs'
+import log from 'electron-log'
 
 export class HttpMonitor {
   constructor (config, processes) {
@@ -95,7 +97,39 @@ export class HttpMonitor {
           p.path = path.join(basePath, p.path)
         }
 
-        app.use('/' + p.name, express.static(p.path), serveIndex(p.path))
+        const handlers = [
+          express.static(p.path),
+          serveIndex(p.path)
+        ]
+
+        if (p.allowDelete) {
+          // Add a handler for delete
+          handlers.splice(0, 0, function (req, res, next) {
+            if (req.method !== 'DELETE') {
+              next()
+              return
+            }
+
+            const fullPath = path.join(p.path, req.url)
+            log.info('Deleting file: ' + fullPath)
+
+            fs.unlink(fullPath, err => {
+              if (err) {
+                if (err.code === 'ENOENT') {
+                  res.sendStatus(404)
+                } else {
+                  res.status(500)
+                  res.send(err)
+                }
+                return
+              }
+
+              res.send('OK')
+            })
+          })
+        }
+
+        app.use('/' + p.name, handlers)
       }
     }
 

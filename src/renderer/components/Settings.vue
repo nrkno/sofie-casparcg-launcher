@@ -90,7 +90,7 @@
                         label="Static paths"
                         label-for="httpApiStaticPathsTable">
             <b-button type="submit" variant="primary" @click="onAddStaticPathRow">Add static path</b-button>
-            <b-table striped :items="config.api.staticPaths" :fields="['name', 'path', 'actions']">
+            <b-table striped :items="config.api.staticPaths" :fields="['name', 'path', 'allowDelete', 'actions']">
               <template slot="name" slot-scope="data">
                 <b-form-input :id="'httpApiStaticPathName' + data.index"
                           type="text" required
@@ -102,6 +102,11 @@
                           type="text" required
                           v-model="config.api.staticPaths[data.index].path">
                 </b-form-input>
+              </template>
+              <template slot="allowDelete" slot-scope="data">
+                <b-form-checkbox :id="'httpApiStaticPathAllowDelete' + data.index"
+                          v-model="config.api.staticPaths[data.index].allowDelete">
+                </b-form-checkbox>
               </template>
               <template slot="actions" slot-scope="row">
                 <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
