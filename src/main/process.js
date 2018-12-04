@@ -205,7 +205,7 @@ export class ProcessMonitor {
       return
     }
 
-    const targetName = this.id + '_' + moment().format('YYYY-MM-DD') + '.log'
+    const targetName = this.config.name + '_' + moment().format('YYYY-MM-DD') + '.log'
     if (targetName === this.logFile) {
       // Correct handle already open
       return
