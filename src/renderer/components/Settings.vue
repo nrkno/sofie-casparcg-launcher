@@ -8,11 +8,14 @@
                         horizontal
                         label="Base Path:"
                         label-for="basePathInput">
-            <b-form-input id="basePathInput"
-                          type="text"
-                          v-model="config.basePath"
-                          placeholder="./">
-            </b-form-input>
+            <b-input-group>
+              <b-form-input id="basePathInput"
+                            type="text"
+                            v-model="config.basePath"
+                            placeholder="./">
+              </b-form-input>
+              <b-button type="info" size="sm" @click.stop="onOpenBasePath" class="mr-2">Open</b-button>
+            </b-input-group>
           </b-form-group>
 
           <b-form-group id="processesGroup"
@@ -23,6 +26,7 @@
                 { key: 'exeName', label: 'Executable' },
                 { key: 'args', label: 'Arguments' },
                 { key: 'health', label: 'Health Check' },
+                { key: 'log', label: 'Save log' },
                 'actions'
               ]">
               <template slot="name" slot-scope="data">
@@ -44,8 +48,13 @@
                 </b-form-input>
               </template>
               <template slot="health" slot-scope="data">
-                <b-form-select :id="'processArgs' + data.index" :options="healthOptions" class="mb-3" 
+                <b-form-select :id="'processHealth' + data.index" :options="healthOptions" class="mb-3" 
                           v-model="config.processes[data.index].health" />
+              </template>
+              <template slot="log" slot-scope="data">
+                <b-form-checkbox :id="'processLog' + data.index"
+                          v-model="config.processes[data.index].logMode">
+                </b-form-checkbox>
               </template>
               <template slot="actions" slot-scope="row">
                 <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
@@ -129,6 +138,7 @@
 </template>
 
 <script>
+  import { shell } from 'electron'
   const {ipcRenderer} = require('electron')
   const packageJson = require('../../../package.json')
 
@@ -188,6 +198,12 @@
       },
       onRemoveProcessRow (row) {
         this.config.processes.splice(row.index, 1)
+      },
+      onOpenBasePath (evt) {
+        evt.preventDefault()
+        if (this.config.basePath) {
+          shell.openItem(this.config.basePath)
+        }
       }
     }
   }

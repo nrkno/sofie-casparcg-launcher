@@ -4,6 +4,7 @@ import path from 'path'
 import fs from 'fs'
 import stringArgv from 'string-argv'
 import equal from 'deep-equal'
+import moment from 'moment'
 
 import { CasparCGHealthMonitor } from './casparcg'
 
@@ -32,6 +33,8 @@ export class ProcessMonitor {
 
     this.config = newConfig
     this.config.exeName = this.config.exeName || ''
+
+    this.logFile = !!this.config.logMode
 
     if (changed) {
       if (this.healthMon) {
@@ -102,12 +105,10 @@ export class ProcessMonitor {
       this.pipeStatus('running')
     })
     this.process.on('stdout', (data) => {
-      const lines = data.toString().trim().split('\n')
-      lines.forEach(l => this.pipeLog('log', l))
+      this.pipeLog('log', data)
     })
     this.process.on('stderr', (data) => {
-      const lines = data.toString().trim().split('\r\n')
-      lines.forEach(l => this.pipeLog('log', l))
+      this.pipeLog('log', data)
     })
     this.process.on('stop', () => {
       log.info('[' + this.id + '] ' + this.config.exeName + ' stop')
@@ -163,16 +164,72 @@ export class ProcessMonitor {
   }
 
   pipeLog (type, msg) {
-    this.ipcWrapper.send('process.log', JSON.stringify({
-      id: this.id,
-      data: {
-        type: type,
-        content: msg
+    let content = [msg.toString()]
+
+    if (type === 'log') {
+      content = content[0].trim().split('\n')
+    }
+
+    content.forEach(l => {
+      this.ipcWrapper.send('process.log', JSON.stringify({
+        id: this.id,
+        data: {
+          type: type,
+          content: l
+        }
+      }))
+    })
+
+    this.ensureLogFileHandleCorrect()
+    if (this.logFileStream) {
+      let fullMsg = msg.toString()
+      if (type === 'event') {
+        fullMsg += '\r\n'
       }
-    }))
+
+      this.logFileStream.write(fullMsg)
+    }
   }
   pipeStatus (status) {
     this.currentStatus = status
     this.ipcWrapper.send('process.status', JSON.stringify({ id: this.id, status: status }))
+  }
+
+  ensureLogFileHandleCorrect () {
+    if (!this.logFile) {
+      if (this.logFileStream) {
+        this.logFileStream.end()
+        this.logFileStream = undefined
+        log.info('[' + this.id + '] Closed log')
+      }
+      return
+    }
+
+    const targetName = this.id + '_' + moment().format('YYYY-MM-DD') + '.log'
+    if (targetName === this.logFile) {
+      // Correct handle already open
+      return
+    }
+
+    // Need to update file handle
+    if (this.logFileStream) {
+      this.logFileStream.end()
+      this.logFileStream = undefined
+      log.info('[' + this.id + '] Closed log')
+    }
+
+    // Ensure folder exists
+    const logBasePath = path.join(this.config.basePath, 'logs')
+    try {
+      fs.mkdirSync(logBasePath, { recursive: true })
+    } catch (e) {
+      // Ignore. It most likely already exists, otherwise below will fail just as well
+    }
+
+    // Open new file
+    const logPath = path.join(logBasePath, targetName)
+    this.logFileStream = fs.createWriteStream(logPath, {flags: 'a'})
+    this.logFile = targetName
+    log.info('[' + this.id + '] Opened log: ' + targetName)
   }
 }
