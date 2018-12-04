@@ -1,11 +1,12 @@
 'use strict'
 
-import { app, BrowserWindow, ipcMain, dialog } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
 import Conf from 'conf'
 import log from 'electron-log'
 
 import { ProcessMonitor } from './process'
 import { HttpMonitor } from './http'
+import { getExeDir, getBasePath } from './util'
 
 /**
  * Set `__static` path to static files in production
@@ -23,11 +24,11 @@ process.on('uncaughtException', function (err) {
 })
 
 const config = new Conf({
-  cwd: process.env.PORTABLE_EXECUTABLE_DIR,
+  cwd: getExeDir(),
   configName: 'casparcg-launcher.config'
 })
 
-console.log('Loading config from:', process.env.PORTABLE_EXECUTABLE_DIR)
+console.log('Loading config from:', getExeDir())
 
 // Simple versioning for config
 const configVersion = config.get('version', 0)
@@ -66,6 +67,8 @@ if (configVersion < 1) {
   config.delete('exe')
   config.delete('health')
 }
+
+console.log(JSON.stringify(config.store, undefined, 4))
 
 let mainWindow
 const winURL = process.env.NODE_ENV === 'development'
@@ -175,6 +178,10 @@ function startupProcesses () {
     e.sender.send('processes.get', procNames)
   })
 
+  wrapper.on('openBasePath', () => {
+    shell.openItem(getBasePath(config))
+  })
+
   function updateProcesses (data, oldData) {
     const procNames = []
 
@@ -182,7 +189,7 @@ function startupProcesses () {
       procNames.push({ id: procData.id, name: procData.name || procData.id })
 
       const procConfig = Object.assign({
-        basePath: config.get('basePath', './')
+        basePath: getBasePath(config)
       }, procData)
 
       if (!processes[procData.id]) {

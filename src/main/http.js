@@ -4,6 +4,8 @@ import serveIndex from 'serve-index'
 import fs from 'fs'
 import log from 'electron-log'
 
+import { getBasePath } from './util'
+
 export class HttpMonitor {
   constructor (config, processes) {
     this.config = config
@@ -87,10 +89,7 @@ export class HttpMonitor {
     // Bind any static paths from the host machine
     const staticPaths = this.config.get('api.staticPaths', [])
     if (staticPaths.length > 0) {
-      let basePath = this.config.get('basePath', './')
-      if (!path.isAbsolute(basePath)) {
-        basePath = path.join(process.env.PORTABLE_EXECUTABLE_DIR, basePath)
-      }
+      let basePath = getBasePath(this.config)
 
       for (let p of staticPaths) {
         if (!path.isAbsolute(p.path)) {

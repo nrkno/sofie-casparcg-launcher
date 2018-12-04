@@ -138,7 +138,6 @@
 </template>
 
 <script>
-  import { shell } from 'electron'
   const {ipcRenderer} = require('electron')
   const packageJson = require('../../../package.json')
 
@@ -201,9 +200,7 @@
       },
       onOpenBasePath (evt) {
         evt.preventDefault()
-        if (this.config.basePath) {
-          shell.openItem(this.config.basePath)
-        }
+        ipcRenderer.send('openBasePath')
       }
     }
   }

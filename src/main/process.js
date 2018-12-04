@@ -62,10 +62,7 @@ export class ProcessMonitor {
   }
 
   init (start) {
-    let basePath = this.config.basePath
-    if (!path.isAbsolute(basePath)) {
-      basePath = path.join(process.env.PORTABLE_EXECUTABLE_DIR, basePath)
-    }
+    const basePath = this.config.basePath
 
     let procPath = this.config.exeName
     if (!path.isAbsolute(procPath)) {
