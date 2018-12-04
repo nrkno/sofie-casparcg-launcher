@@ -1,6 +1,6 @@
 {
   "name": "casparcg-launcher",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "author": "Julian Waller <julian@superfly.tv>",
   "description": "Simple launcher for CasparCG",
   "license": "MIT",
