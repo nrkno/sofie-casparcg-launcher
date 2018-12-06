@@ -3,10 +3,12 @@
 import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
 import Conf from 'conf'
 import log from 'electron-log'
+import fs from 'fs'
+import path from 'path'
 
 import { ProcessMonitor } from './process'
 import { HttpMonitor } from './http'
-import { getExeDir, getBasePath } from './util'
+import { getExeDir, getLogsPath, getBasePath } from './util'
 
 /**
  * Set `__static` path to static files in production
@@ -27,6 +29,11 @@ const config = new Conf({
   cwd: getExeDir(),
   configName: 'casparcg-launcher.config'
 })
+
+function updateLauncherLogFile () {
+  log.transports.file.stream = fs.createWriteStream(path.join(getLogsPath(config), 'launcher.log'), {flags: 'a'})
+}
+updateLauncherLogFile()
 
 console.log('Loading config from:', getExeDir())
 
@@ -67,8 +74,6 @@ if (configVersion < 1) {
   config.delete('exe')
   config.delete('health')
 }
-
-console.log(JSON.stringify(config.store, undefined, 4))
 
 let mainWindow
 const winURL = process.env.NODE_ENV === 'development'
@@ -178,8 +183,13 @@ function startupProcesses () {
     e.sender.send('processes.get', procNames)
   })
 
-  wrapper.on('openBasePath', () => {
-    shell.openItem(getBasePath(config))
+  wrapper.on('openPath', (e, pathId) => {
+    console.log(pathId)
+    if (pathId === 'logsPath') {
+      shell.openItem(getLogsPath(config))
+    } else if (pathId === 'basePath') {
+      shell.openItem(getBasePath(config))
+    }
   })
 
   function updateProcesses (data, oldData) {
@@ -189,7 +199,8 @@ function startupProcesses () {
       procNames.push({ id: procData.id, name: procData.name || procData.id })
 
       const procConfig = Object.assign({
-        basePath: getBasePath(config)
+        basePath: getBasePath(config),
+        logsPath: getLogsPath(config)
       }, procData)
 
       if (!processes[procData.id]) {
@@ -213,11 +224,16 @@ function startupProcesses () {
     wrapper.send('processes.get', procNames)
   }
 
-  config.onDidChange('processes', updateProcesses)
-  config.onDidChange('basePath', () => {
+  function updatePaths () {
+    updateLauncherLogFile()
+
     const data = config.get('processes')
     updateProcesses(data, data)
-  })
+  }
+
+  config.onDidChange('processes', updateProcesses)
+  config.onDidChange('basePath', updatePaths)
+  config.onDidChange('logsPath', updatePaths)
   updateProcesses(config.get('processes'), [])
 }
 

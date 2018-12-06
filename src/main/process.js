@@ -193,40 +193,44 @@ export class ProcessMonitor {
   }
 
   ensureLogFileHandleCorrect () {
-    if (!this.logFile) {
+    try {
+      if (!this.logFile) {
+        if (this.logFileStream) {
+          this.logFileStream.end()
+          this.logFileStream = undefined
+          log.info('[' + this.id + '] Closed log')
+        }
+        return
+      }
+
+      const targetName = this.config.name + '_' + moment().format('YYYY-MM-DD') + '.log'
+      if (targetName === this.logFile) {
+        // Correct handle already open
+        return
+      }
+
+      // Need to update file handle
       if (this.logFileStream) {
         this.logFileStream.end()
         this.logFileStream = undefined
         log.info('[' + this.id + '] Closed log')
       }
-      return
-    }
 
-    const targetName = this.config.name + '_' + moment().format('YYYY-MM-DD') + '.log'
-    if (targetName === this.logFile) {
-      // Correct handle already open
-      return
-    }
+      // Ensure folder exists
+      const logBasePath = this.config.logsPath
+      try {
+        fs.mkdirSync(logBasePath, { recursive: true })
+      } catch (e) {
+        // Ignore. It most likely already exists, otherwise below will fail just as well
+      }
 
-    // Need to update file handle
-    if (this.logFileStream) {
-      this.logFileStream.end()
-      this.logFileStream = undefined
-      log.info('[' + this.id + '] Closed log')
-    }
-
-    // Ensure folder exists
-    const logBasePath = path.join(this.config.basePath, 'logs')
-    try {
-      fs.mkdirSync(logBasePath, { recursive: true })
+      // Open new file
+      const logPath = path.join(logBasePath, targetName)
+      this.logFileStream = fs.createWriteStream(logPath, {flags: 'a'})
+      this.logFile = targetName
+      log.info('[' + this.id + '] Opened log: ' + targetName)
     } catch (e) {
-      // Ignore. It most likely already exists, otherwise below will fail just as well
+      log.error('[' + this.id + '] Failed to write log: ' + e)
     }
-
-    // Open new file
-    const logPath = path.join(logBasePath, targetName)
-    this.logFileStream = fs.createWriteStream(logPath, {flags: 'a'})
-    this.logFile = targetName
-    log.info('[' + this.id + '] Opened log: ' + targetName)
   }
 }

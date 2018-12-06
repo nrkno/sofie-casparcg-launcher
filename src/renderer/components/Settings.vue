@@ -17,6 +17,20 @@
               <b-button type="info" size="sm" @click.stop="onOpenBasePath" class="mr-2">Open</b-button>
             </b-input-group>
           </b-form-group>
+          
+          <b-form-group id="logsPathInputGroup"
+                        horizontal
+                        label="Logs Path:"
+                        label-for="logsPathInput">
+            <b-input-group>
+              <b-form-input id="logsPathInput"
+                            type="text"
+                            v-model="config.logsPath"
+                            placeholder="logs/">
+              </b-form-input>
+              <b-button type="info" size="sm" @click.stop="onOpenLogsPath" class="mr-2">Open</b-button>
+            </b-input-group>
+          </b-form-group>
 
           <b-form-group id="processesGroup"
                         label-for="processesTable">
@@ -200,7 +214,11 @@
       },
       onOpenBasePath (evt) {
         evt.preventDefault()
-        ipcRenderer.send('openBasePath')
+        ipcRenderer.send('openPath', 'basePath')
+      },
+      onOpenLogsPath (evt) {
+        evt.preventDefault()
+        ipcRenderer.send('openPath', 'logsPath')
       }
     }
   }
