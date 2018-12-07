@@ -227,6 +227,9 @@ export class ProcessMonitor {
       // Open new file
       const logPath = path.join(logBasePath, targetName)
       this.logFileStream = fs.createWriteStream(logPath, {flags: 'a'})
+      this.logFileStream.on('error', e => {
+        log.warn('[' + this.id + '] Failed to open log. Log data will be discarded: ' + e)
+      })
       this.logFile = targetName
       log.info('[' + this.id + '] Opened log: ' + targetName)
     } catch (e) {
