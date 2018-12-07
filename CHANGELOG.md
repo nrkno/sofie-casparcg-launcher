@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.5.3"></a>
+## [0.5.3](https://github.com/nrkno/tv-automation-casparcg-launcher/compare/v0.5.2...v0.5.3) (2018-12-07)
+
+
+### Bug Fixes
+
+* Add setting to specify child process and launcher logs path ([7296887](https://github.com/nrkno/tv-automation-casparcg-launcher/commit/7296887))
+* Ensure that the launcher log dir exists. Guard against exceptions attempting to open launcher-log file ([effa614](https://github.com/nrkno/tv-automation-casparcg-launcher/commit/effa614))
+* Guard against exception opening process log files ([aa88301](https://github.com/nrkno/tv-automation-casparcg-launcher/commit/aa88301))
+
+
+
 <a name="0.5.2"></a>
 ## [0.5.2](https://github.com/nrkno/tv-automation-casparcg-launcher/compare/v0.5.1...v0.5.2) (2018-12-04)
 
