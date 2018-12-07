@@ -31,7 +31,20 @@ const config = new Conf({
 })
 
 function updateLauncherLogFile () {
-  log.transports.file.stream = fs.createWriteStream(path.join(getLogsPath(config), 'launcher.log'), {flags: 'a'})
+  const logBasePath = getLogsPath(config)
+  try {
+    fs.mkdirSync(logBasePath, { recursive: true })
+  } catch (e) {
+    // Ignore. It most likely already exists, otherwise below will fail just as well
+  }
+
+  const stream = fs.createWriteStream(path.join(logBasePath, 'launcher.log'), {flags: 'a'})
+  stream.on('open', () => {
+    log.transports.file.stream = stream
+  })
+  stream.on('error', e => {
+    log.warn('Failed to update log path: ' + e)
+  })
 }
 updateLauncherLogFile()
 
