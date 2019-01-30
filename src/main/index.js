@@ -59,13 +59,15 @@ if (configVersion < 1) {
     name: 'CasparCG',
     exeName: 'casparcg.exe',
     args: config.get('args.casparcg', ''),
-    health: config.get('health.casparcg', true) ? 'casparcg' : undefined
+    health: config.get('health.casparcg', true) ? 'casparcg' : undefined,
+    autoStart: true
   })
   processes.push({
     id: 'scanner',
     name: 'Media Scanner',
     exeName: 'scanner.exe',
-    args: config.get('args.media-scanner', '')
+    args: config.get('args.media-scanner', ''),
+    autoStart: true
   })
 
   if (config.store.exe) {
@@ -205,7 +207,7 @@ function startupProcesses () {
     }
   })
 
-  function updateProcesses (data, oldData) {
+  function updateProcesses (data, oldData, coldStart = false) {
     const procNames = []
 
     for (let procData of data) {
@@ -219,7 +221,9 @@ function startupProcesses () {
       if (!processes[procData.id]) {
         // Create new process
         processes[procData.id] = new ProcessMonitor(procData.id, wrapper, procConfig)
-        processes[procData.id].start()
+        if (!coldStart || procData.autoStart) {
+          processes[procData.id].start()
+        }
       } else {
         // Update running
         processes[procData.id].updateConfig(procConfig)
@@ -247,7 +251,7 @@ function startupProcesses () {
   config.onDidChange('processes', updateProcesses)
   config.onDidChange('basePath', updatePaths)
   config.onDidChange('logsPath', updatePaths)
-  updateProcesses(config.get('processes'), [])
+  updateProcesses(config.get('processes'), [], true)
 }
 
 function stopProcesses () {

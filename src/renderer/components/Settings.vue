@@ -41,6 +41,7 @@
                 { key: 'args', label: 'Arguments' },
                 { key: 'health', label: 'Health Check' },
                 { key: 'log', label: 'Save log' },
+                { key: 'start', label: 'Auto start' },
                 'actions'
               ]">
               <template slot="name" slot-scope="data">
@@ -68,6 +69,11 @@
               <template slot="log" slot-scope="data">
                 <b-form-checkbox :id="'processLog' + data.index"
                           v-model="config.processes[data.index].logMode">
+                </b-form-checkbox>
+              </template>
+              <template slot="start" slot-scope="data">
+                <b-form-checkbox :id="'autoStart' + data.index"
+                          v-model="config.processes[data.index].autoStart">
                 </b-form-checkbox>
               </template>
               <template slot="actions" slot-scope="row">
@@ -206,7 +212,8 @@
       onAddProcessRow (evt) {
         evt.preventDefault()
         this.config.processes.push({
-          id: Math.random().toString(36).substring(7)
+          id: Math.random().toString(36).substring(7),
+          autoStart: true
         })
       },
       onRemoveProcessRow (row) {
