@@ -13,6 +13,7 @@ export class ProcessMonitor {
     this.id = id
     this.ipcWrapper = ipcWrapper
     this.currentStatus = 'stopped'
+    this.restarting = false
 
     this.ipcWrapper.on(this.id + '.control', (sender, cmd) => {
       log.info('[' + this.id + '] Got process control command : ' + cmd)
@@ -97,6 +98,7 @@ export class ProcessMonitor {
         this.healthMon.start()
       }
 
+      this.restarting = false
       log.info('[' + this.id + '] ' + this.config.exeName + ' start')
       this.pipeLog('event', '== Process has started ==')
       this.pipeStatus('running')
@@ -145,19 +147,29 @@ export class ProcessMonitor {
   }
 
   start () {
+    this.restarting = false
     if (this.process) {
       this.process.start()
     }
   }
 
   stop (cb) {
+    this.restarting = false
     if (this.process) {
       this.process.stop(cb)
     }
   }
 
   restart () {
-    this.stop(() => this.start())
+    if (this.restarting) {
+      log.info('[' + this.id + '] attempt to restart whilst already restarting')
+      this.pipeLog('log', 'attempt to restart whilst already restarting')
+    } else {
+      this.restarting = true
+      this.stop(() => {
+        setTimeout(() => this.start(), 1000) // Slightly delay restart to defend against multiple retries from core
+      })
+    }
   }
 
   pipeLog (type, msg) {
