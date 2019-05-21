@@ -57,6 +57,8 @@ export class HttpMonitor {
           return res.sendStatus(404)
         }
 
+        log.info(`[${props.id}] received HTTP control message : stop`)
+
         props.stop()
         res.send({})
       })
@@ -67,6 +69,8 @@ export class HttpMonitor {
           return res.sendStatus(404)
         }
 
+        log.info(`[${props.id}] received HTTP control message : start`)
+
         props.start()
         res.send({})
       })
@@ -76,6 +80,8 @@ export class HttpMonitor {
         if (!props) {
           return res.sendStatus(404)
         }
+
+        log.info(`[${props.id}] received HTTP control message : restart`)
 
         props.restart()
         res.send({})
