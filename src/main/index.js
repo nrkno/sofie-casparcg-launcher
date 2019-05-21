@@ -5,6 +5,7 @@ import Conf from 'conf'
 import log from 'electron-log'
 import fs from 'fs'
 import path from 'path'
+import OS from 'os'
 
 import { ProcessMonitor } from './process'
 import { HttpMonitor } from './http'
@@ -47,6 +48,8 @@ function updateLauncherLogFile () {
   })
 }
 updateLauncherLogFile()
+log.info('process started')
+log.info(`OS uptime since ${new Date(Date.now() - (OS.uptime() * 1000)).toTimeString()}`)
 
 console.log('Loading config from:', getExeDir())
 
