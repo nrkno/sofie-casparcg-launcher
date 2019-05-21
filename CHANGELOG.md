@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.6.1"></a>
+## [0.6.1](https://github.com/nrkno/tv-automation-casparcg-launcher/compare/v0.6.0...v0.6.1) (2019-05-21)
+
+
+### Bug Fixes
+
+* defensive code to handle multiple overlapping restart requests ([8ae4330](https://github.com/nrkno/tv-automation-casparcg-launcher/commit/8ae4330))
+
+
+
 <a name="0.6.0"></a>
 # [0.6.0](https://github.com/nrkno/tv-automation-casparcg-launcher/compare/v0.5.3...v0.6.0) (2019-01-30)
 
