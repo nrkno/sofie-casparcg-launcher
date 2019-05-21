@@ -48,7 +48,7 @@ function updateLauncherLogFile () {
   })
 }
 updateLauncherLogFile()
-log.info('started')
+log.info('process started')
 log.info(`OS uptime since ${new Date(Date.now() - (OS.uptime() * 1000)).toTimeString()}`)
 
 console.log('Loading config from:', getExeDir())
