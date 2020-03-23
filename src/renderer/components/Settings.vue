@@ -167,10 +167,10 @@
         this.config = conf
 
         if (!this.config.api) {
-          this.config.api = {}
+          this.$set(this.config, 'api', {})
         }
         if (!this.config.api.staticPaths) {
-          this.config.api.staticPaths = []
+          this.$set(this.config.api, 'staticPaths', [])
         }
       })
       ipcRenderer.send('config.get')
