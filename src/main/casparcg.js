@@ -6,11 +6,11 @@ const pingInterval = 5000
 const pingTimeout = 12000 // 2 pings
 
 export class CasparCGHealthMonitor {
-  constructor (procMon) {
+  constructor(procMon) {
     this.procMon = procMon
   }
 
-  start () {
+  start() {
     if (!this.procMon) {
       return
     }
@@ -29,11 +29,11 @@ export class CasparCGHealthMonitor {
           this.procMon.stop(() => this.procMon.start())
         }
       })
-      this.client.on('data', d => {
+      this.client.on('data', (d) => {
         // We don't care what we got, this proves caspar is alive and responding
         this.lastReceived = Date.now()
       })
-      this.client.on('error', e => {
+      this.client.on('error', (e) => {
         log.error('[' + this.procMon.id + '] ' + e)
         if (this.interval && this.procMon.running()) {
           this.procMon.stop(() => this.procMon.start())
@@ -42,7 +42,7 @@ export class CasparCGHealthMonitor {
     }, startupDelay)
   }
 
-  startPingTimer () {
+  startPingTimer() {
     if (this.interval) {
       return
     }
@@ -67,14 +67,14 @@ export class CasparCGHealthMonitor {
     }, pingInterval)
   }
 
-  stopPingTimer () {
+  stopPingTimer() {
     if (this.interval) {
       clearInterval(this.interval)
       this.interval = undefined
     }
   }
 
-  stop () {
+  stop() {
     this.stopPingTimer()
 
     if (!this.client) {

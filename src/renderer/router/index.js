@@ -8,21 +8,21 @@ export default new Router({
     {
       path: '/settings',
       name: 'settings-page',
-      component: require('@/components/Settings').default
+      component: require('../components/Settings').default,
     },
     {
       path: '/:id',
       name: 'process-page',
-      component: require('@/components/ProcessTab').default
+      component: require('../components/ProcessTab').default,
     },
     {
       path: '/',
       name: 'status-page',
-      component: require('@/components/Status').default
+      component: require('../components/Status').default,
     },
     {
       path: '*',
-      redirect: '/'
-    }
-  ]
+      redirect: '/',
+    },
+  ],
 })

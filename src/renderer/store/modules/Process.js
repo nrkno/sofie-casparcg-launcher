@@ -2,20 +2,20 @@ const state = {}
 
 const maxRows = 500
 
-function ensureStateExists (state, id) {
+function ensureStateExists(state, id) {
   if (!state[id]) {
     state[id] = {
       log: [],
-      status: 'unknown'
+      status: 'unknown',
     }
   }
 }
 
 const mutations = {
-  INIT (state, {id}) {
+  INIT(state, { id }) {
     ensureStateExists(state, id)
   },
-  LOG_LINE (state, {id, data}) {
+  LOG_LINE(state, { id, data }) {
     ensureStateExists(state, id)
 
     state[id].log.push(data)
@@ -25,36 +25,36 @@ const mutations = {
     }
   },
 
-  LOG_CLEAR (state, {id}) {
+  LOG_CLEAR(state, { id }) {
     ensureStateExists(state, id)
 
     state[id].log.splice(0)
   },
 
-  SET_STATUS (state, {id, status}) {
+  SET_STATUS(state, { id, status }) {
     ensureStateExists(state, id)
 
     state[id].status = status
-  }
+  },
 }
 
 const actions = {
-  init ({ commit }, {id}) {
-    commit('INIT', {id})
+  init({ commit }, { id }) {
+    commit('INIT', { id })
   },
-  logLine ({ commit }, {id, data}) {
-    commit('LOG_LINE', {id, data})
+  logLine({ commit }, { id, data }) {
+    commit('LOG_LINE', { id, data })
   },
-  logClear ({ commit }, data) {
+  logClear({ commit }, data) {
     commit('LOG_CLEAR', data)
   },
-  setStatus ({ commit }, data) {
+  setStatus({ commit }, data) {
     commit('SET_STATUS', data)
-  }
+  },
 }
 
 export default {
   state,
   mutations,
-  actions
+  actions,
 }
