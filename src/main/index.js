@@ -103,22 +103,27 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     height: 768,
     useContentSize: true,
-    width: process.env.NODE_ENV === 'development' ? 1600 : 1024
+    width: process.env.NODE_ENV === 'development' ? 1600 : 1024,
+    webPreferences: {
+      nodeIntegration: true // TODO This needs to be removed asap
+    }
   })
 
   mainWindow.loadURL(winURL)
 
   mainWindow.on('close', e => {
-    const choice = dialog.showMessageBox(mainWindow,
-      {
-        type: 'question',
-        buttons: ['Yes', 'No'],
-        title: 'Confirm',
-        message: 'Are you sure you want to quit?'
-      })
+    if (process.env.NODE_ENV !== 'development') {
+      const choice = dialog.showMessageBox(mainWindow,
+        {
+          type: 'question',
+          buttons: ['Yes', 'No'],
+          title: 'Confirm',
+          message: 'Are you sure you want to quit?'
+        })
 
-    if (choice === 1) {
-      e.preventDefault()
+      if (choice === 1) {
+        e.preventDefault()
+      }
     }
 
     log.info('shutting down')
