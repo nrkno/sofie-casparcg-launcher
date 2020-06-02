@@ -44,39 +44,39 @@
                 { key: 'start', label: 'Auto start' },
                 'actions'
               ]">
-              <template slot="name" slot-scope="data">
+              <template v-slot:cell(name)="data">
                 <b-form-input :id="'processName' + data.index"
                           type="text" required
                           v-model="config.processes[data.index].name">
                 </b-form-input>
               </template>
-              <template slot="exeName" slot-scope="data" label="Executable">
+              <template v-slot:cell(exeName)="data" label="Executable">
                 <b-form-input :id="'processExeName' + data.index"
                           type="text" required
                           v-model="config.processes[data.index].exeName">
                 </b-form-input>
               </template>
-              <template slot="args" slot-scope="data">
+              <template v-slot:cell(args)="data">
                 <b-form-input :id="'processArgs' + data.index"
                           type="text"
                           v-model="config.processes[data.index].args">
                 </b-form-input>
               </template>
-              <template slot="health" slot-scope="data">
+              <template v-slot:cell(health)="data">
                 <b-form-select :id="'processHealth' + data.index" :options="healthOptions" class="mb-3" 
                           v-model="config.processes[data.index].health" />
               </template>
-              <template slot="log" slot-scope="data">
+              <template v-slot:cell(log)="data">
                 <b-form-checkbox :id="'processLog' + data.index"
                           v-model="config.processes[data.index].logMode">
                 </b-form-checkbox>
               </template>
-              <template slot="start" slot-scope="data">
+              <template v-slot:cell(start)="data">
                 <b-form-checkbox :id="'autoStart' + data.index"
                           v-model="config.processes[data.index].autoStart">
                 </b-form-checkbox>
               </template>
-              <template slot="actions" slot-scope="row">
+              <template v-slot:cell(actions)="row">
                 <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
                 <b-button size="sm" @click.stop="onRemoveProcessRow(row)" class="mr-2">
                 Remove
@@ -120,24 +120,24 @@
                         label-for="httpApiStaticPathsTable">
             <b-button type="submit" variant="primary" @click="onAddStaticPathRow">Add static path</b-button>
             <b-table striped :items="config.api.staticPaths" :fields="['name', 'path', 'allowDelete', 'actions']">
-              <template slot="name" slot-scope="data">
+              <template v-slot:cell(name)="data">
                 <b-form-input :id="'httpApiStaticPathName' + data.index"
                           type="text" required
                           v-model="config.api.staticPaths[data.index].name">
                 </b-form-input>
               </template>
-              <template slot="path" slot-scope="data">
+              <template v-slot:cell(path)="data">
                 <b-form-input :id="'httpApiStaticPathPath' + data.index"
                           type="text" required
                           v-model="config.api.staticPaths[data.index].path">
                 </b-form-input>
               </template>
-              <template slot="allowDelete" slot-scope="data">
+              <template v-slot:cell(allowDelete)="data">
                 <b-form-checkbox :id="'httpApiStaticPathAllowDelete' + data.index"
                           v-model="config.api.staticPaths[data.index].allowDelete">
                 </b-form-checkbox>
               </template>
-              <template slot="actions" slot-scope="row">
+              <template v-slot:cell(actions)="row">
                 <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
                 <b-button size="sm" @click.stop="onRemoveStaticPathRow(row)" class="mr-2">
                 Remove

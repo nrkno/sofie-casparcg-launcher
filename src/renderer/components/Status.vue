@@ -2,15 +2,14 @@
   <b-container fluid>
     <b-row>
       <b-col>
-
         <b-table striped :items="processes" :fields="[
             'name',
             { key: 'status', label: '' }
             ]">
-            <template slot="name" slot-scope="data">
+            <template v-slot:cell(name)="data">
                 <b-link v-bind:to="'/' + data.item.id">{{ data.value }}</b-link>
             </template>
-            <template slot="status" slot-scope="data">
+            <template v-slot:cell(status)="data">
                 <process-controls :id="data.item.id" />
             </template>
         </b-table>

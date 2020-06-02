@@ -1,5 +1,3 @@
-'use strict'
-
 import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
 import Conf from 'conf'
 import log from 'electron-log'
