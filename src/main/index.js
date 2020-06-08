@@ -203,11 +203,15 @@ function startupProcesses() {
   })
 
   wrapper.on('openPath', (e, pathId) => {
-    console.log(pathId)
-    if (pathId === 'logsPath') {
-      shell.openItem(getLogsPath(config))
-    } else if (pathId === 'basePath') {
-      shell.openItem(getBasePath(config))
+    try {
+      log.info('openPath', pathId)
+      if (pathId === 'logsPath') {
+        shell.openPath(getLogsPath(config))
+      } else if (pathId === 'basePath') {
+        shell.openPath(getBasePath(config))
+      }
+    } catch (e) {
+      log.error('Failed to openItem', e)
     }
   })
 
