@@ -1,6 +1,25 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [1.0.0](https://github.com/nrkno/tv-automation-casparcg-launcher/compare/v0.6.1...v1.0.0) (2020-06-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade electron
+
+### Features
+
+* upgrade electron ([76025c4](https://github.com/nrkno/tv-automation-casparcg-launcher/commit/76025c49dbe340d056bd7e38894aaf9a8d88a3b3))
+
+
+### Bug Fixes
+
+* Adding a static path ([fd2c638](https://github.com/nrkno/tv-automation-casparcg-launcher/commit/fd2c63802e5d014a090294f9b9291d5295527f74))
+* broken tables ([02e7a25](https://github.com/nrkno/tv-automation-casparcg-launcher/commit/02e7a25d45230539064861e6e5074bf95e0f5c25))
+* building package on linux ([85c99dc](https://github.com/nrkno/tv-automation-casparcg-launcher/commit/85c99dcae0c9d0f5da97f46f015cf4d8528f34b7))
+* openPath buttons crashing app ([50660f5](https://github.com/nrkno/tv-automation-casparcg-launcher/commit/50660f549b4218b7d8ea32620ae9854dd7e0cd41))
 
 <a name="0.6.1"></a>
 ## [0.6.1](https://github.com/nrkno/tv-automation-casparcg-launcher/compare/v0.6.0...v0.6.1) (2019-05-21)
