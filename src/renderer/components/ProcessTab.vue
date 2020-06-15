@@ -6,8 +6,8 @@
           <process-controls :id="this.$route.params.id" showClear="1" />
         </div>
 
-        <ul id="log-panel" v-chat-scroll="{always: false}">
-          <li v-for="(l, i) in data.log" v-bind:key="i" v-bind:class="[l.type, logClass(l)]">
+        <ul id="log-panel" v-chat-scroll="{ always: false }">
+          <li v-for="(l, i) in data.log" v-bind:key="i" :class="[l.type, logClass(l)]">
             {{ l.content }}
           </li>
         </ul>
@@ -17,78 +17,78 @@
 </template>
 
 <script>
-  import ProcessControls from './ProcessControls'
+import ProcessControls from './ProcessControls'
 
-  export default {
-    components: {
-      'process-controls': ProcessControls
-    },
-    data () {
-      return {
-        data: this.$store.state.Process[this.$route.params.id] || {}
-      }
-    },
-
-    watch: {
-      '$route' (to, from) {
-        this.$store.dispatch('init', { id: this.$route.params.id })
-        this.data = this.$store.state.Process[to.params.id] || {}
-      }
-    },
-
-    methods: {
-      logClass (l) {
-        if (l.content.indexOf('[fatal]') !== -1) {
-          return 'fatal'
-        }
-        if (l.content.indexOf('[error]') !== -1) {
-          return 'error'
-        }
-        if (l.content.indexOf('[warning]') !== -1) {
-          return 'warning'
-        }
-        if (l.content.indexOf('[info]') !== -1) {
-          return 'info'
-        }
-
-        return null
-      }
+export default {
+  components: {
+    'process-controls': ProcessControls,
+  },
+  data() {
+    return {
+      data: this.$store.state.Process[this.$route.params.id] || {},
     }
-  }
+  },
+
+  watch: {
+    $route(to, from) {
+      this.$store.dispatch('init', { id: this.$route.params.id })
+      this.data = this.$store.state.Process[to.params.id] || {}
+    },
+  },
+
+  methods: {
+    logClass(l) {
+      if (l.content.indexOf('[fatal]') !== -1) {
+        return 'fatal'
+      }
+      if (l.content.indexOf('[error]') !== -1) {
+        return 'error'
+      }
+      if (l.content.indexOf('[warning]') !== -1) {
+        return 'warning'
+      }
+      if (l.content.indexOf('[info]') !== -1) {
+        return 'info'
+      }
+
+      return null
+    },
+  },
+}
 </script>
 
 <style scoped>
-  #status-bar {
-    text-align: right;
-  }
-  
-  #log-panel {
-    list-style-type: none;
-    overflow: scroll;
+#status-bar {
+  text-align: right;
+}
 
-    overflow-y: scroll;
-    height: calc(100vh - 56px - 38px - 50px);
+#log-panel {
+  list-style-type: none;
+  overflow: scroll;
 
-    font-family: courier;
-    font-size: 0.95em;
-  }
+  overflow-y: scroll;
+  height: calc(100vh - 56px - 38px - 50px);
 
-  #log-panel li {
-    white-space: nowrap;
-  }
+  font-family: courier;
+  font-size: 0.95em;
+}
 
-  #log-panel li.event {
-    color: blue;
-  }
-  
-  #log-panel li.log.error {
-    color: red;
-  }
-  #log-panel li.log.fatal {
-    color: red;
-    font-weight: bold;
-  }
-  #log-panel li.log.warning {
-    color: orange;
-  }
+#log-panel li {
+  white-space: nowrap;
+}
+
+#log-panel li.event {
+  color: blue;
+}
+
+#log-panel li.log.error {
+  color: red;
+}
+#log-panel li.log.fatal {
+  color: red;
+  font-weight: bold;
+}
+#log-panel li.log.warning {
+  color: orange;
+}
 </style>

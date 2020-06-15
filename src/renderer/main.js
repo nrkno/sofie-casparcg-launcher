@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue'
 import VueChatScroll from 'vue-chat-scroll'
-import {ipcRenderer} from 'electron'
+import { ipcRenderer } from 'electron'
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -31,5 +31,5 @@ new Vue({
   components: { App },
   router,
   store,
-  template: '<App/>'
+  template: '<App/>',
 }).$mount('#app')

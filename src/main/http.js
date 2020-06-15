@@ -7,7 +7,7 @@ import log from 'electron-log'
 import { getBasePath } from './util'
 
 export class HttpMonitor {
-  constructor (config, processes) {
+  constructor(config, processes) {
     this.config = config
     this.processes = processes
 
@@ -19,7 +19,7 @@ export class HttpMonitor {
     this.init(true)
   }
 
-  reinit () {
+  reinit() {
     if (this.server) {
       this.server.close(() => this.init(true))
     } else {
@@ -27,13 +27,13 @@ export class HttpMonitor {
     }
   }
 
-  stop () {
+  stop() {
     if (this.server) {
       this.server.close()
     }
   }
 
-  init () {
+  init() {
     if (!this.config.get('api.enable', false)) {
       this.server = null
       return
@@ -102,10 +102,7 @@ export class HttpMonitor {
           p.path = path.join(basePath, p.path)
         }
 
-        const handlers = [
-          express.static(p.path),
-          serveIndex(p.path)
-        ]
+        const handlers = [express.static(p.path), serveIndex(p.path)]
 
         if (p.allowDelete) {
           // Add a handler for delete
@@ -118,7 +115,7 @@ export class HttpMonitor {
             const fullPath = path.join(p.path, req.url)
             log.info('Deleting file: ' + fullPath)
 
-            fs.unlink(fullPath, err => {
+            fs.unlink(fullPath, (err) => {
               if (err) {
                 if (err.code === 'ENOENT') {
                   res.sendStatus(404)

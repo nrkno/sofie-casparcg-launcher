@@ -9,7 +9,7 @@ import moment from 'moment'
 import { CasparCGHealthMonitor } from './casparcg'
 
 export class ProcessMonitor {
-  constructor (id, ipcWrapper, config) {
+  constructor(id, ipcWrapper, config) {
     this.id = id
     this.ipcWrapper = ipcWrapper
     this.currentStatus = 'stopped'
@@ -29,7 +29,7 @@ export class ProcessMonitor {
     this.updateConfig(config)
   }
 
-  updateConfig (newConfig) {
+  updateConfig(newConfig) {
     const changed = !equal(newConfig, this.config)
 
     this.config = newConfig
@@ -53,7 +53,7 @@ export class ProcessMonitor {
     }
   }
 
-  reinit () {
+  reinit() {
     const restart = this.running()
     if (this.process) {
       this.process.stop(() => this.init(restart))
@@ -62,7 +62,7 @@ export class ProcessMonitor {
     }
   }
 
-  init (start) {
+  init(start) {
     const basePath = this.config.basePath
 
     let procPath = this.config.exeName
@@ -87,11 +87,9 @@ export class ProcessMonitor {
     }
 
     const args = this.config.args || ''
-    this.process = respawn(
-      [this.config.exeName].concat(stringArgv(args)), {
-        cwd: basePath
-      }
-    )
+    this.process = respawn([this.config.exeName].concat(stringArgv(args)), {
+      cwd: basePath,
+    })
 
     this.process.on('start', () => {
       if (this.healthMon) {
@@ -142,25 +140,25 @@ export class ProcessMonitor {
     }
   }
 
-  running () {
+  running() {
     return this.process && this.process.status === 'running'
   }
 
-  start () {
+  start() {
     this.restarting = false
     if (this.process) {
       this.process.start()
     }
   }
 
-  stop (cb) {
+  stop(cb) {
     this.restarting = false
     if (this.process) {
       this.process.stop(cb)
     }
   }
 
-  restart () {
+  restart() {
     if (this.restarting) {
       log.info('[' + this.id + '] attempt to restart whilst already restarting')
       this.pipeLog('log', 'attempt to restart whilst already restarting')
@@ -172,21 +170,24 @@ export class ProcessMonitor {
     }
   }
 
-  pipeLog (type, msg) {
+  pipeLog(type, msg) {
     let content = [msg.toString()]
 
     if (type === 'log') {
       content = content[0].trim().split('\n')
     }
 
-    content.forEach(l => {
-      this.ipcWrapper.send('process.log', JSON.stringify({
-        id: this.id,
-        data: {
-          type: type,
-          content: l
-        }
-      }))
+    content.forEach((l) => {
+      this.ipcWrapper.send(
+        'process.log',
+        JSON.stringify({
+          id: this.id,
+          data: {
+            type: type,
+            content: l,
+          },
+        })
+      )
     })
 
     this.ensureLogFileHandleCorrect()
@@ -199,12 +200,12 @@ export class ProcessMonitor {
       this.logFileStream.write(fullMsg)
     }
   }
-  pipeStatus (status) {
+  pipeStatus(status) {
     this.currentStatus = status
     this.ipcWrapper.send('process.status', JSON.stringify({ id: this.id, status: status }))
   }
 
-  ensureLogFileHandleCorrect () {
+  ensureLogFileHandleCorrect() {
     try {
       if (!this.logFile) {
         if (this.logFileStream) {
@@ -238,8 +239,8 @@ export class ProcessMonitor {
 
       // Open new file
       const logPath = path.join(logBasePath, targetName)
-      this.logFileStream = fs.createWriteStream(logPath, {flags: 'a'})
-      this.logFileStream.on('error', e => {
+      this.logFileStream = fs.createWriteStream(logPath, { flags: 'a' })
+      this.logFileStream.on('error', (e) => {
         log.warn('[' + this.id + '] Failed to open log. Log data will be discarded: ' + e)
       })
       this.logFile = targetName
