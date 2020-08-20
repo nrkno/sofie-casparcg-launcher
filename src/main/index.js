@@ -9,11 +9,13 @@ import { ProcessMonitor } from './process'
 import { HttpMonitor } from './http'
 import { getExeDir, getLogsPath, getBasePath } from './util'
 
+const isProduction = process.env.NODE_ENV !== 'development'
+
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
  */
-if (process.env.NODE_ENV !== 'development') {
+if (isProduction) {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
 
@@ -93,7 +95,7 @@ if (configVersion < 1) {
 }
 
 let mainWindow
-const winURL = process.env.NODE_ENV === 'development' ? `http://localhost:9080` : `file://${__dirname}/index.html`
+const winURL = !isProduction ? `http://localhost:9080` : `file://${__dirname}/index.html`
 
 function createWindow() {
   /**
@@ -102,17 +104,21 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     height: 768,
     useContentSize: true,
-    width: process.env.NODE_ENV === 'development' ? 1600 : 1024,
+    width: !isProduction ? 1600 : 1024,
     webPreferences: {
       nodeIntegration: true, // TODO This needs to be removed asap
     },
   })
 
+  if (isProduction) {
+    mainWindow.removeMenu()
+  }
+
   mainWindow.loadURL(winURL)
 
   mainWindow.on('close', (e) => {
-    if (process.env.NODE_ENV !== 'development') {
-      const choice = dialog.showMessageBox(mainWindow, {
+    if (isProduction) {
+      const choice = dialog.showMessageBoxSync(mainWindow, {
         type: 'question',
         buttons: ['Yes', 'No'],
         title: 'Confirm',
