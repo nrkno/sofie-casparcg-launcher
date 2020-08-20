@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.1](https://github.com/nrkno/tv-automation-casparcg-launcher/compare/v1.0.0...v1.0.1) (2020-08-20)
+
+
+### Bug Fixes
+
+* hide menubar and prompting for confirmation on exit in production builds ([4c5193f](https://github.com/nrkno/tv-automation-casparcg-launcher/commit/4c5193f29e59e31f9d113755abb5fe074ca73fe1))
+* Set CWD to executable file directory ([ea05dc5](https://github.com/nrkno/tv-automation-casparcg-launcher/commit/ea05dc551062fec45153b23769bc1bd3d133ada1))
+
 ## [1.0.0](https://github.com/nrkno/tv-automation-casparcg-launcher/compare/v0.6.1...v1.0.0) (2020-06-15)
 
 
