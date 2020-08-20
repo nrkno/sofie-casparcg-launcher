@@ -86,9 +86,11 @@ export class ProcessMonitor {
       return
     }
 
+    const cwd = path.dirname(procPath)
+    const exeName = path.basename(procPath)
     const args = this.config.args || ''
-    this.process = respawn([this.config.exeName].concat(stringArgv(args)), {
-      cwd: basePath,
+    this.process = respawn([exeName].concat(stringArgv(args)), {
+      cwd,
     })
 
     this.process.on('start', () => {
