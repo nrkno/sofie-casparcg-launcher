@@ -3,7 +3,7 @@
     <b-row>
       <b-col>
         <div id="status-bar">
-          <process-controls :id="this.$route.params.id" showClear="1" />
+          <process-controls :key="this.$route.params.id" :id="this.$route.params.id" showClear="1" />
         </div>
 
         <ul id="log-panel" v-chat-scroll="{ always: false }">
