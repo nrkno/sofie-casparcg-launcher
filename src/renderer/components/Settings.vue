@@ -1,8 +1,8 @@
 <template>
   <b-container fluid>
-    <b-row>
-      <b-col>
-        <b-form @submit="onSubmit" @reset="onReset">
+    <b-form @submit="onSubmit" @reset="onReset">
+      <b-row>
+        <b-col id="content">
           <legend>Processes</legend>
           <b-form-group id="basePathInputGroup" horizontal label="Base Path:" label-for="basePathInput">
             <b-input-group>
@@ -138,18 +138,22 @@
               </template>
             </b-table>
           </b-form-group>
-
+        </b-col>
+      </b-row>
+      <b-row id="footer">
+        <b-col>
           <b-button type="submit" variant="primary">
             Save
           </b-button>
           <b-button type="reset" variant="danger">
             Reset
           </b-button>
-
-          <p>Version: {{ version }}</p>
-        </b-form>
-      </b-col>
-    </b-row>
+        </b-col>
+        <b-col id="version">
+          <p class="text-right">Version: {{ version }}</p>
+        </b-col>
+      </b-row>
+    </b-form>
   </b-container>
 </template>
 
@@ -227,4 +231,24 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+@import '../../../node_modules/bootstrap/scss/bootstrap';
+@import '../../../node_modules/bootstrap/scss/_variables';
+$button-height: 40px;
+$footer-padding: 1rem;
+$footer-height: calc(#{$button-height} + #{2 * $footer-padding});
+#content {
+  margin-bottom: $footer-height;
+}
+#footer {
+  background: $light;
+  bottom: 0;
+  width: 100%;
+  height: $footer-height;
+  padding-top: $footer-padding;
+  position: fixed;
+}
+#version {
+  padding-top: $btn-padding-y;
+}
+</style>
