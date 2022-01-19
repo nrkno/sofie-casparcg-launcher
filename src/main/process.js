@@ -1,5 +1,5 @@
 import log from 'electron-log'
-import respawn from 'respawn'
+import respawn from './respawn'
 import path from 'path'
 import fs from 'fs'
 import stringArgv from 'string-argv'
@@ -15,7 +15,7 @@ export class ProcessMonitor {
     this.currentStatus = 'stopped'
     this.restarting = false
 
-    this.ipcWrapper.on(this.id + '.control', (sender, cmd) => {
+    this.ipcWrapper.on(this.id + '.control', (sender, cmd, param) => {
       log.info('[' + this.id + '] Got process control command : ' + cmd)
       if (cmd === 'stop') {
         this.stop()
@@ -23,6 +23,8 @@ export class ProcessMonitor {
         this.start()
       } else if (cmd === 'restart') {
         this.restart()
+      } else if (cmd === 'command') {
+        this.sendCommand(param)
       }
     })
 
@@ -169,6 +171,12 @@ export class ProcessMonitor {
       this.stop(() => {
         setTimeout(() => this.start(), 1000) // Slightly delay restart to defend against multiple retries from core
       })
+    }
+  }
+
+  sendCommand(command) {
+    if (this.process) {
+      this.process.write(command)
     }
   }
 

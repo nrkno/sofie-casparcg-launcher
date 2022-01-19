@@ -11,12 +11,19 @@
             {{ l.content }}
           </li>
         </ul>
+        <b-form ref="commandForm" @submit.prevent="onSubmit">
+          <b-input-group>
+            <b-form-input placeholder="Enter a command" id="command"></b-form-input>
+            <b-button type="submit">Send</b-button>
+          </b-input-group>
+        </b-form>
       </b-col>
     </b-row>
   </b-container>
 </template>
 
 <script>
+const { ipcRenderer } = require('electron')
 import ProcessControls from './ProcessControls'
 
 export default {
@@ -53,6 +60,11 @@ export default {
 
       return null
     },
+    onSubmit(submitEvent) {
+      const command = submitEvent.target.elements.command.value
+      ipcRenderer.send(this.$route.params.id + '.control', 'command', command)
+      this.$refs.commandForm.reset()
+    },
   },
 }
 </script>
@@ -67,7 +79,7 @@ export default {
   overflow: scroll;
 
   overflow-y: scroll;
-  height: calc(100vh - 56px - 38px - 50px);
+  height: calc(100vh - 56px - 38px - 100px);
 
   font-family: courier;
   font-size: 0.95em;
