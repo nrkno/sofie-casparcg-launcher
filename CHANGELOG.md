@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/nrkno/tv-automation-casparcg-launcher/compare/v1.0.1...v1.1.0) (2022-01-19)
+
+
+### Features
+
+* add sending commands through stdin ([2a291ed](https://github.com/nrkno/tv-automation-casparcg-launcher/commit/2a291ed59280f2cb56310f2bef33a20f3fa2144d))
+
+
+### Bug Fixes
+
+* make the Settings footer sticky ([6ad21ff](https://github.com/nrkno/tv-automation-casparcg-launcher/commit/6ad21ff7b8410dfeca7bce3bc77f00fa4235039f))
+* process controls not updating when changing tab ([c677e1c](https://github.com/nrkno/tv-automation-casparcg-launcher/commit/c677e1cfdda74711726186687706f776a9c30ff4))
+
 ### [1.0.1](https://github.com/nrkno/tv-automation-casparcg-launcher/compare/v1.0.0...v1.0.1) (2020-08-20)
 
 
