@@ -1,10 +1,16 @@
-# Sofie: The Modern TV News Studio Automation System (launcher for the CasparCG Server process)
+# Sofie CasparCG Server Launcher
+This is the _CasparCG Server Launcher_ application, part of the [**Sofie** TV Automation System](https://github.com/nrkno/Sofie-TV-automation/). 
 
-This is used in the [**Sofie** TV News Studio Automation System](https://github.com/nrkno/Sofie-TV-automation/).
+## Repository-specific Info for Developers
+* [Developer Info](DEVELOPER.md)
+* [Contribution Guidelines](CONTRIBUTING.md)
 
-> Simple launcher for CasparCG
+## General Sofie System Info
+* [Documentation](https://nrkno.github.io/sofie-core/)
+* [Releases](https://nrkno.github.io/sofie-core/releases)
 
-### Features
+---
+## Features
  * Presents log in a more readable format with lines coloured by severity
  * Builds as a single exe that can be dropped into existing casparcg folder
  * Allows for easy stopping and restarting of both casparcg and media-scanner
@@ -17,7 +23,8 @@ This is used in the [**Sofie** TV News Studio Automation System](https://github.
 
  See the [changelog](CHANGELOG.md) for more information
 
-### Screenshots
+
+## Screenshots
 
 ![](doc/status.png)
 
@@ -25,7 +32,7 @@ This is used in the [**Sofie** TV News Studio Automation System](https://github.
 
 ![](doc/settings.png)
 
-### Build Setup
+## Build Setup
 
 ``` bash
 # install dependencies
@@ -42,6 +49,9 @@ yarn run lint
 
 ```
 
+This project was generated with [electron-vue](https://github.com/SimulatedGREG/electron-vue)@[7c4e3e9](https://github.com/SimulatedGREG/electron-vue/tree/7c4e3e90a772bd4c27d2dd4790f61f09bae0fcef) using [vue-cli](https://github.com/vuejs/vue-cli). Documentation about the original structure can be found [here](https://simulatedgreg.gitbooks.io/electron-vue/content/index.html).
+
 ---
 
-This project was generated with [electron-vue](https://github.com/SimulatedGREG/electron-vue)@[7c4e3e9](https://github.com/SimulatedGREG/electron-vue/tree/7c4e3e90a772bd4c27d2dd4790f61f09bae0fcef) using [vue-cli](https://github.com/vuejs/vue-cli). Documentation about the original structure can be found [here](https://simulatedgreg.gitbooks.io/electron-vue/content/index.html).
+_The NRK logo is a registered trademark of Norsk rikskringkasting AS. The license does not grant any right to use, in any way, any trademarks, service marks or logos of Norsk rikskringkasting AS._
+
