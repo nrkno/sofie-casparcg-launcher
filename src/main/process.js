@@ -39,6 +39,8 @@ export class ProcessMonitor {
 
     this.logFile = !!this.config.logMode
 
+    this.pipeStatus(this.currentStatus) // update showSendCommand
+
     if (changed) {
       if (this.healthMon) {
         this.healthMon.stop()
@@ -175,8 +177,8 @@ export class ProcessMonitor {
   }
 
   sendCommand(command) {
-    if (this.process) {
-      this.process.write(command)
+    if (this.process && this.config.sendCommands) {
+      this.process.write(command, this.config.sendCommands)
     }
   }
 
@@ -212,7 +214,14 @@ export class ProcessMonitor {
   }
   pipeStatus(status) {
     this.currentStatus = status
-    this.ipcWrapper.send('process.status', JSON.stringify({ id: this.id, status: status }))
+    this.ipcWrapper.send(
+      'process.status',
+      JSON.stringify({
+        id: this.id,
+        status: status,
+        showCommandSend: !!this.config.sendCommands,
+      })
+    )
   }
 
   ensureLogFileHandleCorrect() {

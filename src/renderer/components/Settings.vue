@@ -34,6 +34,7 @@
                 { key: 'exeName', label: 'Executable' },
                 { key: 'args', label: 'Arguments' },
                 { key: 'health', label: 'Health Check' },
+                { key: 'sendCommands', label: 'Send Commands' },
                 { key: 'log', label: 'Save log' },
                 { key: 'start', label: 'Auto start' },
                 'actions',
@@ -67,6 +68,14 @@
                   :id="'processHealth' + data.index"
                   v-model="config.processes[data.index].health"
                   :options="healthOptions"
+                  class="mb-3"
+                />
+              </template>
+              <template #cell(sendCommands)="data">
+                <b-form-select
+                  :id="'sendCommands' + data.index"
+                  v-model="config.processes[data.index].sendCommands"
+                  :options="sendCommandsOptions"
                   class="mb-3"
                 />
               </template>
@@ -168,6 +177,11 @@ export default {
       healthOptions: [
         { value: undefined, text: 'None' },
         { value: 'casparcg', text: 'CasparCG Ping' },
+      ],
+      sendCommandsOptions: [
+        { value: undefined, text: 'Disabled' },
+        { value: 'utf8', text: 'Generic process' },
+        { value: 'utf16le', text: 'CasparCG 2.4+' },
       ],
       config: {
         api: {

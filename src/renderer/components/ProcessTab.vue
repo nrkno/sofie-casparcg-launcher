@@ -11,7 +11,7 @@
             {{ l.content }}
           </li>
         </ul>
-        <b-form ref="commandForm" @submit.prevent="onSubmit">
+        <b-form ref="commandForm" @submit.prevent="onSubmit" v-bind:class="{ hidden: !data.showCommandSend }">
           <b-input-group>
             <b-form-input placeholder="Enter a command" id="command"></b-form-input>
             <b-button type="submit">Send</b-button>
@@ -102,5 +102,9 @@ export default {
 }
 #log-panel li.log.warning {
   color: orange;
+}
+
+.hidden {
+  display: none;
 }
 </style>

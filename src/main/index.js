@@ -65,6 +65,7 @@ if (configVersion < 1) {
     args: config.get('args.casparcg', ''),
     health: config.get('health.casparcg', true) ? 'casparcg' : undefined,
     autoStart: true,
+    sendCommands: 'utf16le',
   })
   processes.push({
     id: 'scanner',
@@ -72,6 +73,7 @@ if (configVersion < 1) {
     exeName: 'scanner.exe',
     args: config.get('args.media-scanner', ''),
     autoStart: true,
+    sendCommands: undefined,
   })
 
   if (config.store.exe) {

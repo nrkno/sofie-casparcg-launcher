@@ -7,6 +7,7 @@ function ensureStateExists(state, id) {
     state[id] = {
       log: [],
       status: 'unknown',
+      showCommandSend: false,
     }
   }
 }
@@ -31,10 +32,11 @@ const mutations = {
     state[id].log.splice(0)
   },
 
-  SET_STATUS(state, { id, status }) {
+  SET_STATUS(state, { id, status, showCommandSend }) {
     ensureStateExists(state, id)
 
     state[id].status = status
+    state[id].showCommandSend = showCommandSend
   },
 }
 
