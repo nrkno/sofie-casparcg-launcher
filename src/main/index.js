@@ -95,6 +95,21 @@ if (configVersion < 1) {
   config.delete('exe')
   config.delete('health')
 }
+if (configVersion < 2) {
+  const processes = config.get('processes')
+  for (let process of processes) {
+    if (!('sendCommands' in process)) {
+      if (process.id === 'scanner') {
+        process.sendCommands = undefined
+      } else {
+        process.sendCommands = 'utf8'
+      }
+    }
+  }
+
+  config.set('processes', processes)
+  config.set('version', 2)
+}
 
 let mainWindow
 const winURL = !isProduction ? `http://localhost:9080` : `file://${__dirname}/index.html`
