@@ -35,11 +35,7 @@
           </b-form-group>
 
           <b-form-group id="processesGroup" label-for="processesTable">
-            <b-table-simple
-              striped
-              :items="config.processes"
-              :fields="['name', { key: 'actions', class: 'compact-column', label: '' }]"
-            >
+            <b-table-simple striped>
               <b-thead>
                 <b-th>
                   Name
@@ -104,8 +100,62 @@
                             :id="'processArgs' + index"
                             v-model="config.processes[index].args"
                             type="text"
-                            required
                           />
+                        </b-form-group>
+
+                        <b-form-group
+                          label="Environment Variables"
+                          :label-for="'env' + index"
+                          label-cols-sm="4"
+                          label-cols-lg="3"
+                          content-cols-sm
+                          content-cols-lg="7"
+                        >
+                          <b-table-simple :items="config.processes[index].env || []">
+                            <b-thead>
+                              <b-th> Name </b-th>
+                              <b-th> Value </b-th>
+                              <b-th class="compact-column">
+                                <b-button
+                                  type="submit"
+                                  variant="primary"
+                                  @click="onAddEnvironmentVariable(index)"
+                                  size="sm"
+                                >
+                                  Add
+                                </b-button>
+                              </b-th>
+                            </b-thead>
+                            <b-tbody>
+                              <b-tr v-for="(_env, envIndex) in data.env || []" v-bind:key="'row-' + envIndex">
+                                <b-td>
+                                  <b-form-input
+                                    :id="'id' + index + '-' + envIndex"
+                                    v-model="config.processes[index].env[envIndex].id"
+                                    type="text"
+                                    required
+                                  />
+                                </b-td>
+                                <b-td>
+                                  <b-form-input
+                                    :id="'value' + index + '-' + envIndex"
+                                    v-model="config.processes[index].env[envIndex].value"
+                                    type="text"
+                                  />
+                                </b-td>
+                                <b-td class="compact-column">
+                                  <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
+                                  <b-button
+                                    size="sm"
+                                    @click.stop="onRemoveEnvironmentVariable(index, envIndex)"
+                                    class="mr-2"
+                                  >
+                                    Remove
+                                  </b-button>
+                                </b-td>
+                              </b-tr>
+                            </b-tbody>
+                          </b-table-simple>
                         </b-form-group>
 
                         <b-form-group
@@ -338,6 +388,13 @@ export default {
     onOpenLogsPath(evt) {
       evt.preventDefault()
       ipcRenderer.send('openPath', 'logsPath')
+    },
+    onAddEnvironmentVariable(index) {
+      if (!this.config.processes[index].env) this.config.processes[index].env = []
+      this.config.processes[index].env.push({ id: '', value: '' })
+    },
+    onRemoveEnvironmentVariable(rowIndex, envIndex) {
+      this.config.processes[rowIndex].env.splice(envIndex, 1)
     },
   },
 }
