@@ -95,6 +95,7 @@ export class ProcessMonitor {
     const args = this.config.args || ''
     this.process = respawn([exeName].concat(stringArgv(args)), {
       cwd,
+      env: this.config.env ? Object.fromEntries(this.config.env.map((obj) => [obj.id, obj.value])) : undefined,
     })
 
     this.process.on('start', () => {
