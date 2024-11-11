@@ -111,7 +111,7 @@
                           content-cols-sm
                           content-cols-lg="7"
                         >
-                          <b-table-simple :items="config.processes[index].env || []">
+                          <b-table-simple>
                             <b-thead>
                               <b-th> Name </b-th>
                               <b-th> Value </b-th>
@@ -265,39 +265,46 @@
             content-cols-sm
             content-cols-lg="7"
           >
-            <b-button type="submit" variant="primary" @click="onAddStaticPathRow"> Add static path </b-button>
-            <b-table-lite
-              striped
-              :items="config.api.staticPaths"
-              :fields="['name', 'path', 'allowDelete', { key: 'actions', class: 'compact-column' }]"
-            >
-              <template #cell(name)="data">
-                <b-form-input
-                  :id="'httpApiStaticPathName' + data.index"
-                  v-model="config.api.staticPaths[data.index].name"
-                  type="text"
-                  required
-                />
-              </template>
-              <template #cell(path)="data">
-                <b-form-input
-                  :id="'httpApiStaticPathPath' + data.index"
-                  v-model="config.api.staticPaths[data.index].path"
-                  type="text"
-                  required
-                />
-              </template>
-              <template #cell(allowDelete)="data">
-                <b-form-checkbox
-                  :id="'httpApiStaticPathAllowDelete' + data.index"
-                  v-model="config.api.staticPaths[data.index].allowDelete"
-                />
-              </template>
-              <template #cell(actions)="row">
-                <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
-                <b-button size="sm" @click.stop="onRemoveStaticPathRow(row)" class="mr-2"> Remove </b-button>
-              </template>
-            </b-table-lite>
+            <b-table-simple>
+              <b-thead>
+                <b-th> Name </b-th>
+                <b-th> Path </b-th>
+                <b-th> Allow Delete </b-th>
+                <b-th class="compact-column">
+                  <b-button type="submit" variant="primary" @click="onAddStaticPathRow" size="sm"> Add </b-button>
+                </b-th>
+              </b-thead>
+              <b-tbody>
+                <b-tr v-for="(data, index) in config.api.staticPaths" v-bind:key="'row-' + index">
+                  <b-td>
+                    <b-form-input
+                      :id="'httpApiStaticPathName' + index"
+                      v-model="config.api.staticPaths[index].name"
+                      type="text"
+                      required
+                    />
+                  </b-td>
+                  <b-td>
+                    <b-form-input
+                      :id="'httpApiStaticPathPath' + index"
+                      v-model="config.api.staticPaths[index].path"
+                      type="text"
+                      required
+                    />
+                  </b-td>
+                  <b-td>
+                    <b-form-checkbox
+                      :id="'httpApiStaticPathAllowDelete' + index"
+                      v-model="config.api.staticPaths[index].allowDelete"
+                    />
+                  </b-td>
+                  <b-td>
+                    <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
+                    <b-button size="sm" @click.stop="onRemoveStaticPathRow(index)" class="mr-2"> Remove </b-button>
+                  </b-td>
+                </b-tr>
+              </b-tbody>
+            </b-table-simple>
           </b-form-group>
         </b-col>
       </b-row>
@@ -368,8 +375,8 @@ export default {
       evt.preventDefault()
       this.config.api.staticPaths.push({})
     },
-    onRemoveStaticPathRow(row) {
-      this.config.api.staticPaths.splice(row.index, 1)
+    onRemoveStaticPathRow(index) {
+      this.config.api.staticPaths.splice(index, 1)
     },
     onAddProcessRow(evt) {
       evt.preventDefault()
