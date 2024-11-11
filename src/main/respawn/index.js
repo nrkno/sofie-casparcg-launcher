@@ -194,9 +194,9 @@ Monitor.prototype.start = function () {
   if (this.status === 'running') this.emit('start')
 }
 
-Monitor.prototype.write = function (command) {
+Monitor.prototype.write = function (command, encoding) {
   if (this.status === 'running' && this.child && this.child.stdin) {
-    this.child.stdin.write(command + '\n')
+    this.child.stdin.write(command + '\n', encoding)
   }
 }
 
