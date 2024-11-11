@@ -4,119 +4,223 @@
       <b-row>
         <b-col id="content">
           <legend>Processes</legend>
-          <b-form-group id="basePathInputGroup" horizontal label="Base Path:" label-for="basePathInput">
+          <b-form-group
+            id="basePathInputGroup"
+            label="Base Path:"
+            label-for="basePathInput"
+            label-cols-sm="4"
+            label-cols-lg="3"
+            content-cols-sm
+            content-cols-lg="7"
+          >
             <b-input-group>
               <b-form-input id="basePathInput" type="text" v-model="config.basePath" placeholder="./"> </b-form-input>
-              <b-button type="info" size="sm" class="mr-2" @click.stop="onOpenBasePath">
-                Open
-              </b-button>
+              <b-button type="info" size="sm" class="mr-2" @click.stop="onOpenBasePath"> Open </b-button>
             </b-input-group>
           </b-form-group>
 
-          <b-form-group id="logsPathInputGroup" horizontal label="Logs Path:" label-for="logsPathInput">
+          <b-form-group
+            id="logsPathInputGroup"
+            label="Logs Path:"
+            label-for="logsPathInput"
+            label-cols-sm="4"
+            label-cols-lg="3"
+            content-cols-sm
+            content-cols-lg="7"
+          >
             <b-input-group>
               <b-form-input id="logsPathInput" type="text" v-model="config.logsPath" placeholder="logs/" />
-              <b-button type="info" size="sm" class="mr-2" @click.stop="onOpenLogsPath">
-                Open
-              </b-button>
+              <b-button type="info" size="sm" class="mr-2" @click.stop="onOpenLogsPath"> Open </b-button>
             </b-input-group>
           </b-form-group>
 
           <b-form-group id="processesGroup" label-for="processesTable">
-            <b-button type="submit" variant="primary" @click="onAddProcessRow">
-              Add process
-            </b-button>
-            <b-table
+            <b-table-simple
               striped
               :items="config.processes"
-              :fields="[
-                'name',
-                { key: 'exeName', label: 'Executable' },
-                { key: 'args', label: 'Arguments' },
-                { key: 'health', label: 'Health Check' },
-                { key: 'sendCommands', label: 'Send Commands' },
-                { key: 'log', label: 'Save log' },
-                { key: 'start', label: 'Auto start' },
-                'actions',
-              ]"
+              :fields="['name', { key: 'actions', class: 'compact-column', label: '' }]"
             >
-              <template #cell(name)="data">
-                <b-form-input
-                  :id="'processName' + data.index"
-                  v-model="config.processes[data.index].name"
-                  type="text"
-                  required
-                />
-              </template>
-              <template #cell(exeName)="data" label="Executable">
-                <b-form-input
-                  :id="'processExeName' + data.index"
-                  v-model="config.processes[data.index].exeName"
-                  type="text"
-                  required
-                />
-              </template>
-              <template #cell(args)="data">
-                <b-form-input
-                  :id="'processArgs' + data.index"
-                  v-model="config.processes[data.index].args"
-                  type="text"
-                />
-              </template>
-              <template #cell(health)="data">
-                <b-form-select
-                  :id="'processHealth' + data.index"
-                  v-model="config.processes[data.index].health"
-                  :options="healthOptions"
-                  class="mb-3"
-                />
-              </template>
-              <template #cell(sendCommands)="data">
-                <b-form-select
-                  :id="'sendCommands' + data.index"
-                  v-model="config.processes[data.index].sendCommands"
-                  :options="sendCommandsOptions"
-                  class="mb-3"
-                />
-              </template>
-              <template #cell(log)="data">
-                <b-form-checkbox :id="'processLog' + data.index" v-model="config.processes[data.index].logMode" />
-              </template>
-              <template #cell(start)="data">
-                <b-form-checkbox :id="'autoStart' + data.index" v-model="config.processes[data.index].autoStart" />
-              </template>
-              <template #cell(actions)="row">
-                <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
-                <b-button size="sm" @click.stop="onRemoveProcessRow(row)" class="mr-2">
-                  Remove
-                </b-button>
-              </template>
-            </b-table>
+              <b-thead>
+                <b-th>
+                  Name
+
+                  <b-button type="submit" variant="primary" @click="onAddProcessRow" size="sm" class="button-right">
+                    Add
+                  </b-button>
+                </b-th>
+              </b-thead>
+              <b-tbody>
+                <template v-for="(data, index) in config.processes">
+                  <b-tr v-bind:key="'row-' + index">
+                    <b-td>
+                      <b-form inline>
+                        <b-form-input
+                          :id="'processName' + index"
+                          v-model="config.processes[index].name"
+                          type="text"
+                          required
+                          class="name-field"
+                        />
+
+                        <b-button
+                          v-b-toggle="'collapse-' + index"
+                          variant="primary"
+                          size="sm"
+                          class="button-margin-right"
+                        >
+                          <span class="when-open">Less</span><span class="when-closed">More</span> Options
+                        </b-button>
+
+                        <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
+                        <b-button size="sm" @click.stop="onRemoveProcessRow(index)" class="mr-2"> Remove </b-button>
+                      </b-form>
+
+                      <b-collapse v-bind:id="'collapse-' + index" class="mt-2">
+                        <b-form-group
+                          label="Executable"
+                          :label-for="'processExeName' + index"
+                          label-cols-sm="4"
+                          label-cols-lg="3"
+                          content-cols-sm
+                          content-cols-lg="7"
+                        >
+                          <b-form-input
+                            :id="'processExeName' + index"
+                            v-model="config.processes[index].exeName"
+                            type="text"
+                            required
+                          />
+                        </b-form-group>
+
+                        <b-form-group
+                          label="Arguments"
+                          :label-for="'processArgs' + index"
+                          label-cols-sm="4"
+                          label-cols-lg="3"
+                          content-cols-sm
+                          content-cols-lg="7"
+                        >
+                          <b-form-input
+                            :id="'processArgs' + index"
+                            v-model="config.processes[index].args"
+                            type="text"
+                            required
+                          />
+                        </b-form-group>
+
+                        <b-form-group
+                          label="Health Check"
+                          :label-for="'processHealth' + index"
+                          label-cols-sm="4"
+                          label-cols-lg="3"
+                          content-cols-sm
+                          content-cols-lg="7"
+                        >
+                          <b-form-select
+                            :id="'processHealth' + index"
+                            v-model="config.processes[index].health"
+                            :options="healthOptions"
+                            class="mb-3"
+                          />
+                        </b-form-group>
+
+                        <b-form-group
+                          label="Send Commands"
+                          :label-for="'sendCommands' + index"
+                          label-cols-sm="4"
+                          label-cols-lg="3"
+                          content-cols-sm
+                          content-cols-lg="7"
+                        >
+                          <b-form-select
+                            :id="'sendCommands' + index"
+                            v-model="config.processes[index].sendCommands"
+                            :options="sendCommandsOptions"
+                            class="mb-3"
+                          />
+                        </b-form-group>
+
+                        <b-form-group
+                          label="Save Log"
+                          :label-for="'processLog' + index"
+                          label-cols-sm="4"
+                          label-cols-lg="3"
+                          content-cols-sm
+                          content-cols-lg="7"
+                        >
+                          <b-form-checkbox :id="'processLog' + index" v-model="config.processes[index].logMode" />
+                        </b-form-group>
+
+                        <b-form-group
+                          label="Auto start"
+                          :label-for="'autoStart' + index"
+                          label-cols-sm="4"
+                          label-cols-lg="3"
+                          content-cols-sm
+                          content-cols-lg="7"
+                        >
+                          <b-form-checkbox :id="'autoStart' + index" v-model="config.processes[index].autoStart" />
+                        </b-form-group>
+                      </b-collapse>
+                    </b-td>
+                  </b-tr>
+                </template>
+              </b-tbody>
+            </b-table-simple>
           </b-form-group>
 
           <legend>HTTP</legend>
-          <b-form-group id="httpApiEnableGroup" horizontal label="Enable HTTP Server:" label-for="httpApiEnableInput">
+          <b-form-group
+            id="httpApiEnableGroup"
+            label="Enable HTTP Server:"
+            label-for="httpApiEnableInput"
+            label-cols-sm="4"
+            label-cols-lg="3"
+            content-cols-sm
+            content-cols-lg="7"
+          >
             <b-form-checkbox id="httpApiEnableInput" v-model="config.api.enable"> </b-form-checkbox>
           </b-form-group>
 
-          <b-form-group id="httpApiPortGroup" horizontal label="HTTP Server Port:" label-for="httpApiPortInput">
+          <b-form-group
+            id="httpApiPortGroup"
+            label="HTTP Server Port:"
+            label-for="httpApiPortInput"
+            label-cols-sm="4"
+            label-cols-lg="3"
+            content-cols-sm
+            content-cols-lg="7"
+          >
             <b-form-input id="httpApiPortInput" type="number" v-model="config.api.port" placeholder="8005" />
           </b-form-group>
 
           <b-form-group
             id="httpApiProcessControlGroup"
-            horizontal
             label="Process control API:"
             label-for="httpApiProcessControlInput"
+            label-cols-sm="4"
+            label-cols-lg="3"
+            content-cols-sm
+            content-cols-lg="7"
           >
             <b-form-checkbox id="httpApiProcessControlInput" v-model="config.api.processControl"> </b-form-checkbox>
           </b-form-group>
 
-          <b-form-group id="httpApiStaticPathsGroup" label="Static paths" label-for="httpApiStaticPathsTable">
-            <b-button type="submit" variant="primary" @click="onAddStaticPathRow">
-              Add static path
-            </b-button>
-            <b-table striped :items="config.api.staticPaths" :fields="['name', 'path', 'allowDelete', 'actions']">
+          <b-form-group
+            id="httpApiStaticPathsGroup"
+            label="Static paths"
+            label-for="httpApiStaticPathsTable"
+            label-cols-sm="4"
+            label-cols-lg="3"
+            content-cols-sm
+            content-cols-lg="7"
+          >
+            <b-button type="submit" variant="primary" @click="onAddStaticPathRow"> Add static path </b-button>
+            <b-table-lite
+              striped
+              :items="config.api.staticPaths"
+              :fields="['name', 'path', 'allowDelete', { key: 'actions', class: 'compact-column' }]"
+            >
               <template #cell(name)="data">
                 <b-form-input
                   :id="'httpApiStaticPathName' + data.index"
@@ -141,22 +245,16 @@
               </template>
               <template #cell(actions)="row">
                 <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
-                <b-button size="sm" @click.stop="onRemoveStaticPathRow(row)" class="mr-2">
-                  Remove
-                </b-button>
+                <b-button size="sm" @click.stop="onRemoveStaticPathRow(row)" class="mr-2"> Remove </b-button>
               </template>
-            </b-table>
+            </b-table-lite>
           </b-form-group>
         </b-col>
       </b-row>
       <b-row id="footer">
         <b-col>
-          <b-button type="submit" variant="primary">
-            Save
-          </b-button>
-          <b-button type="reset" variant="danger">
-            Reset
-          </b-button>
+          <b-button type="submit" variant="primary"> Save </b-button>
+          <b-button type="reset" variant="danger"> Reset </b-button>
         </b-col>
         <b-col id="version">
           <p class="text-right">Version: {{ version }}</p>
@@ -230,8 +328,8 @@ export default {
         autoStart: true,
       })
     },
-    onRemoveProcessRow(row) {
-      this.config.processes.splice(row.index, 1)
+    onRemoveProcessRow(index) {
+      this.config.processes.splice(index, 1)
     },
     onOpenBasePath(evt) {
       evt.preventDefault()
@@ -264,5 +362,33 @@ $footer-height: calc(#{$button-height} + #{2 * $footer-padding});
 }
 #version {
   padding-top: $btn-padding-y;
+}
+
+.collapsed > .when-open,
+.not-collapsed > .when-closed {
+  display: none;
+}
+</style>
+<style lang="scss">
+.compact-column {
+  width: 1%; // Make as narrow as possible
+  vertical-align: middle !important;
+
+  button {
+    white-space: nowrap;
+  }
+}
+
+.button-margin-right {
+  margin-right: 0.5rem !important;
+}
+
+.button-right {
+  float: right;
+}
+
+.name-field {
+  flex-grow: 1;
+  margin-right: 0.5rem !important;
 }
 </style>
