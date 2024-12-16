@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/nrkno/sofie-casparcg-launcher/compare/v1.1.0...v1.2.0) (2024-12-16)
+
+
+### Features
+
+* add setting to choose process stdin encoding ([dc0cd51](https://github.com/nrkno/sofie-casparcg-launcher/commit/dc0cd51b89bf5902e97d0bd8d8cfa9491496d103))
+* restyle settings layout, splitting processes table columns into a collapse ([4fe30b3](https://github.com/nrkno/sofie-casparcg-launcher/commit/4fe30b38c2e6526c36a93b5a85d1c11ff0c0ecdb))
+* set env variables for processes ([c518d21](https://github.com/nrkno/sofie-casparcg-launcher/commit/c518d218c127967fcf20e165754e57bda176f18f))
+
 ## [1.1.0](https://github.com/nrkno/tv-automation-casparcg-launcher/compare/v1.0.1...v1.1.0) (2022-01-19)
 
 
