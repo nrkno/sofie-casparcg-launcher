@@ -63,6 +63,7 @@ if (configVersion < 1) {
     name: 'CasparCG',
     exeName: 'casparcg.exe',
     args: config.get('args.casparcg', ''),
+    env: [],
     health: config.get('health.casparcg', true) ? 'casparcg' : undefined,
     autoStart: true,
     sendCommands: 'utf16le',
@@ -72,6 +73,7 @@ if (configVersion < 1) {
     name: 'Media Scanner',
     exeName: 'scanner.exe',
     args: config.get('args.media-scanner', ''),
+    env: [],
     autoStart: true,
     sendCommands: undefined,
   })
@@ -84,6 +86,7 @@ if (configVersion < 1) {
         name: k,
         exeName: config.store.exe[k],
         args: config.get('args.' + k, ''),
+        env: [],
       })
     }
   }
